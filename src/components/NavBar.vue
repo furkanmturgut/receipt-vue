@@ -8,7 +8,7 @@
         <router-link :to="{ name: 'RegisterView' }" class="links"
           >Üye Ol</router-link
         >
-
+        <button @click="homeToLogin">LOGIN</button>
         <router-link :to="{ name: 'LoginView' }" class="links"
           >Giriş Yap</router-link
         >
@@ -43,7 +43,10 @@ export default {
           console.log(error);
         });
     };
-    return { handleLogout, user };
+    const homeToLogin = () => {
+      router.push({name : "LoginView"});
+    }
+    return { handleLogout, user, homeToLogin };
   },
 };
 </script>
@@ -54,7 +57,7 @@ export default {
   background: #a1f3ee;
 }
 
-/* nav,
+nav,
 .sign {
   display: flex;
   align-items: center;
@@ -85,7 +88,7 @@ nav a {
 nav .links:hover {
   color: #eeeeee;
   background-color: #053b50;
-} */
+} 
 
 .button {
   display: flex;
