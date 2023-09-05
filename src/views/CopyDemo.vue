@@ -1,9 +1,13 @@
 <template>
-  <h3>Fiş Ekleme</h3>
-  <div id="card">
-    <form @submit.prevent="submitData">
+  <div>
+    <h1>Toggle Menu</h1>
+    <TfToggleButtonView v-model="isMenuOpen">
+      Aç/Kapat
+    </TfToggleButtonView>
+    <div v-if="isMenuOpen">
+      <form @submit.prevent="submitData">
       <div id="fatura">
-        <h1>Fatura</h1>
+        <h1 style="text-align: center;">Fatura</h1>
         <video
           ref="videoElement"
           style="display: none"
@@ -12,10 +16,26 @@
         ></video>
         <TfButtonView
           v-if="!isCameraOn || isPhotoTaken"
+          style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+          "
           @click="requestCameraAccess"
           >Kamerayı aç</TfButtonView
         >
-        <TfButtonView v-else @click="takePhoto">📸</TfButtonView>
+        <TfButtonView
+          v-else
+          @click="takePhoto"
+          style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+          "
+          >📸</TfButtonView
+        >
         <canvas ref="canvasElement" style="display: none"></canvas>
         <img
           v-if="isPhotoTaken"
@@ -24,9 +44,10 @@
           alt="Çekilen Fotoğraf"
         />
       </div>
-      <input type="date"/>
+      <input style="width: auto; height: 2rem;" type="date" />
       <TfButtonView type="submit" label="Kaydet" />
     </form>
+    </div>
   </div>
 </template>
 
@@ -143,7 +164,8 @@ export default {
 
 <style>
 #cameraDiv,
-form {
+form,
+#fatura {
   display: grid;
   justify-content: center;
   grid-template-columns: 1fr;
@@ -158,3 +180,4 @@ form {
   align-items: center;
 }
 </style>
+
