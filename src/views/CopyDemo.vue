@@ -77,6 +77,7 @@ export default {
     const photoScreen = ref(null);
     const isCameraOn = ref(false);
     const isPhotoTaken = ref(false);
+    const isMenuOpen = ref(false);
     let cameraStream = null;
 
     const requestCameraAccess = async () => {
@@ -157,6 +158,7 @@ export default {
       //
       isCameraOn,
       isPhotoTaken,
+      isMenuOpen,
     };
   },
 };
