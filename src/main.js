@@ -7,8 +7,13 @@ import Password from 'primevue/password';
 import Button from "primevue/button";
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-import TabMenu from 'primevue/tabmenu';
+import SplitButton from 'primevue/splitbutton';
+import PanelMenu from 'primevue/panelmenu';
+import FileUpload from 'primevue/fileupload';
+import InputMask from 'primevue/inputmask';
 import "primevue/resources/themes/lara-light-indigo/theme.css";
+import Checkbox from 'primevue/checkbox';
+
 const firebaseConfig = {
     apiKey: "AIzaSyB-I2nFAzW2hAijf70StQ_YxD-uXvbbFBo",
     authDomain: "receipt-vue.firebaseapp.com",
@@ -27,6 +32,10 @@ app.component('TfButtonView', Button);
 app.component('TfPasswordView', Password);
 app.component('TfInputView', InputText);
 app.component('TfTextAreaView', Textarea);
-app.component('TfTabMenuiew', TabMenu);
+app.component('TfSplitButtonView', SplitButton);
+app.component('TfChechkbox',Checkbox);
+app.component('TfPanelMenuView',PanelMenu);
+app.component('TfUploadView',FileUpload);
+app.component('TfInputMaskView',InputMask);
 
 app.mount('#app');

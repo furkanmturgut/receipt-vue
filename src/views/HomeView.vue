@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div><!--COMPINFO CALISMIYOR, COMPANY.COMPANYNAME ÇALIŞIYOR-->
     <h3>HomeView</h3>
-    <p v-if="isUser">Hoşgeldin {{ compInfo.companyName }}</p>
-    <div v-for="company in compInfo" :key="company.id">
-      <p>{{ company.companyName }}</p>
+    <div class="container" v-for="company in compInfo" :key="company.id">
+      <!--<p v-if="isUser">Hoşgeldin {{ compInfo.companyName }}</p> Gereksiz silinebilir-->
+      <p>Hoş geldin {{ company.companyName }}</p>
     </div>
-    <TfButtonView>Fiş Ekle</TfButtonView>
-    
+    <TfSplitButtonView @click="addReceipt" label='Fiş Ekle' />
+
   </div>
 </template>
 
@@ -14,6 +14,7 @@
 import { getDocs, getFirestore, collection, query, where, } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { onMounted, ref } from "vue";
+import { useRouter } from 'vue-router';
 export default {
   setup() {
     const db = getFirestore();
@@ -22,6 +23,7 @@ export default {
     const myId = ref(null);
     const isUser = ref(null);
     const compInfo = ref([]);
+    const router = useRouter();
 
     onMounted(async () => {
       const querySnapshot = await getDocs(collection(db, "admins"));
@@ -55,7 +57,7 @@ export default {
           //console.log(doc.id, ' => ', doc.data());
           compInfo.value.push(doc.data())
         });
-       
+
       }
 
 
@@ -67,15 +69,20 @@ export default {
           //console.log(doc.id, ' => ', doc.data());
           compInfo.value.push(doc.data())
         });
-       
+
       }
 
     });
 
+    const addReceipt = () => {
+      router.push({ name: 'AddReceiptView' })
+    }
 
-    return { compInfo, isUser };
+    return { compInfo, isUser, addReceipt };
   },
 };
 </script>
 
-<style></style>
+<style scoped>
+
+</style>

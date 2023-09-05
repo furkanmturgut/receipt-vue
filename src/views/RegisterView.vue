@@ -3,45 +3,19 @@
     <h3>Üye Ol</h3>
     <form @submit.prevent="handleRegister">
       <label>E-Mail Adres</label>
-      <TfInputView
-        type="email"
-        required
-        v-model="enteredMail"
-        placeholder="E-mail Adresi Giriniz"
-      />
+      <TfInputView type="email" required v-model="enteredMail" placeholder="E-mail Adresi Giriniz" />
 
       <label>Parola</label>
-      <TfPasswordView
-        type="password"
-        required
-        v-model="enteredPass"
-        placeholder="Parola Belirleyin"
-      />
+      <TfPasswordView type="password" required v-model="enteredPass" placeholder="Parola Belirleyin" />
 
       <label>Firma Adı</label>
-      <TfInputView
-        type="text"
-        required
-        v-model="enteredCompanyName"
-        placeholder="Turkuvaz İnovasyon A.Ş."
-      />
+      <TfInputView type="text" required v-model="enteredCompanyName" placeholder="Turkuvaz İnovasyon A.Ş." />
 
       <label>Firma İletişim (+90)</label>
-      <TfInputView
-        type="number"
-        required
-        v-model="enteredCompanyPhone"
-        placeholder="5XX XXX XXXX"
-      />
+      <TfInputView type="number" required v-model="enteredCompanyPhone" placeholder="5XX XXX XXXX" />
 
       <label>Firma Adres</label>
-      <TfTextAreaView
-        type="text"
-        required
-        rows="4"
-        v-model="enteredCompanyAddress"
-        placeholder="Adres Giriniz"
-      />
+      <TfTextAreaView type="text" required rows="4" v-model="enteredCompanyAddress" placeholder="Adres Giriniz" />
       <TfButtonView type="submit" label="Kayıt Ol" />
     </form>
   </div>
@@ -141,10 +115,10 @@ form {
   margin-bottom: 10px;
 } */
 
-form > label {
+form>label {
   display: flex;
   justify-content: center;
-} 
+}
 
 /* form > textarea {
   width: 250px;
