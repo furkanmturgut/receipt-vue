@@ -12,8 +12,14 @@ import SplitButton from "primevue/splitbutton";
 import PanelMenu from "primevue/panelmenu";
 import FileUpload from "primevue/fileupload";
 import InputMask from "primevue/inputmask";
-import "primevue/resources/themes/lara-light-indigo/theme.css";
 import Checkbox from "primevue/checkbox";
+import Card from 'primevue/card';
+import DataView from 'primevue/dataview';
+import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions'
+import RadioButton from 'primevue/radiobutton';
+import "primevue/resources/themes/lara-light-indigo/theme.css";
+import 'primeicons/primeicons.css';
+import 'primeflex/primeflex.css';
 
 const firebaseConfig = {
   apiKey: "AIzaSyB-I2nFAzW2hAijf70StQ_YxD-uXvbbFBo",
@@ -39,5 +45,10 @@ app.component("TfPanelMenuView", PanelMenu);
 app.component("TfUploadView", FileUpload);
 app.component("TfInputMaskView", InputMask);
 app.component("TfToggleButtonView",ToggleButton);
+app.component("TfCardView",Card);
+app.component("TfDataView",DataView);
+app.component("TfDataViewLayout",DataViewLayoutOptions);
+app.component("TfRadioView",RadioButton);
+
 
 app.mount("#app");

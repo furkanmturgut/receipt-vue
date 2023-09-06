@@ -44,7 +44,7 @@
           alt="Çekilen Fotoğraf"
         />
       </div>
-      <input style="width: auto; height: 2rem;" type="date" />
+      <input type="date" v-model="dateValue" style="width: auto; height: 2rem;" />
       <TfButtonView type="submit" label="Kaydet" />
     </form>
     </div>
@@ -78,6 +78,7 @@ export default {
     const isCameraOn = ref(false);
     const isPhotoTaken = ref(false);
     const isMenuOpen = ref(false);
+    const dateValue = ref(null);
     let cameraStream = null;
 
     const requestCameraAccess = async () => {
@@ -128,8 +129,14 @@ export default {
         const storageRef = FBref(storage, `slips/${id}`);
         const fileSnapshot = await uploadBytes(storageRef, photoPng.value);
         const downloadURL = await getDownloadURL(fileSnapshot.ref);
+        const yearSlice = dateValue.value.slice(0,4);
+        const monthSlice = dateValue.value.slice(5,7);
+        const daySlice = dateValue.value.slice(8,10);
+        const dateConvert = daySlice + '.' + monthSlice + '.' + yearSlice;
 
+        console.log(typeof(dateConvert), dateConvert);
         try {
+
           const docRef = addDoc(collection(db, "slips"), {
             uploadDate: serverTimestamp(),
             receiptDate: "",
@@ -155,6 +162,7 @@ export default {
       canvasElement,
       photoPng,
       photoScreen,
+      dateValue,
       //
       isCameraOn,
       isPhotoTaken,
@@ -164,10 +172,10 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #cameraDiv,
-form,
-#fatura {
+#fatura,
+form{
   display: grid;
   justify-content: center;
   grid-template-columns: 1fr;

@@ -2,10 +2,8 @@
   <div class="navbar">
     <nav>
       <TfButtonView @click="handleLogout" class="button" v-if="user" label="Çıkış" />
-      <div class="sign" v-else-if="!user">
-        <TfButtonView @click="homeTo('register')" label="Üye ol" />
-        <TfButtonView @click="homeTo('login')" label="Giriş yap" />
-      </div>
+      <TfButtonView v-else-if="!user" @click="homeTo('register')" label="Üye ol" />
+      <TfButtonView v-if="!user" @click="homeTo('login')" label="Giriş yap" />
     </nav>
   </div>
 </template>
@@ -50,17 +48,16 @@ export default {
   padding: 16px 10px;
   background: #a1f3ee;
 }
-
+button.p-button.p-component.p-splitbutton-defaultbutton 
+{
+  padding: 7px 60px;
+}
 nav {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 15px;
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.sign {
-  justify-content: space-between;
-  ;
 }
 </style>

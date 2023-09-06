@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h3>Üye Ol</h3>
+    <h3 style="display: flex; justify-content: center">Üye Ol</h3>
     <form @submit.prevent="handleRegister">
       <label>E-Mail Adres</label>
       <TfInputView type="email" required v-model="enteredMail" placeholder="E-mail Adresi Giriniz" />
@@ -81,7 +81,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .container {
   background-color: #64ccc5;
   min-height: 500px;
@@ -102,51 +102,10 @@ form {
   justify-content: center;
 }
 
-/* form > input {
-  width: 250px;
-  justify-content: center;
-  outline: none;
-  margin: 1.2rem;
-  font-size: 1.05rem;
-  color: black;
-  background-color: transparent;
-  border-radius: 5px;
-  line-height: 1.2rem;
-  margin-bottom: 10px;
-} */
-
 form>label {
   display: flex;
   justify-content: center;
 }
-
-/* form > textarea {
-  width: 250px;
-  margin: 1.2rem;
-  line-height: 1.2rem;
-  margin-bottom: 10px;
-
-  opacity: 0.5;
-  font-size: 1.05rem;
-  color: black;
-  outline: none;
-  border: 3px solid black;
-  border-radius: 5px;
-} */
-
-/* form > button {
-  padding: 0.5rem 2rem;
-  font-size: 1rem;
-  color: #fff;
-  background-color: #1d4ed8;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-button:hover {
-  background-color: #1e40af;
-} */
 
 /* @media (width < 900px) {
     .nav-links {

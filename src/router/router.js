@@ -4,7 +4,7 @@ import RegisterView from "../views/RegisterView.vue";
 import LoginView from "../views/LoginView.vue";
 import AddReceipt from '../views/AddReceipt.vue';
 import CopyDemo from '../views/CopyDemo.vue';
-
+import ReceiptDetailView from '../views/ReceiptDetailView.vue';
 
 // const authControl = (to,from,next) => {
 //   let auth = getAuth().currentUser.uid;
@@ -34,7 +34,8 @@ import CopyDemo from '../views/CopyDemo.vue';
     component: HomeView,
     name: "HomeView",
   },
-  {path:'/addReceipt',component:AddReceipt,name:'AddReceiptView'}
+  {path:'/addReceipt',component:AddReceipt,name:'AddReceiptView'},
+  {path:'/receiptDetail/:id',component:ReceiptDetailView,name:'ReceiptDetailView',props:true}
 ];
 
 const router = createRouter({

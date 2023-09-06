@@ -1,9 +1,10 @@
 <template>
   <div class="container">
-    <h3>Giriş Yap</h3>
+    <h3 style="display: flex; justify-content: center">Giriş Yap</h3>
     <form @submit.prevent="handleLogin">
       <label>E-Mail Adres</label>
       <TfInputView
+        class="emailInput"
         type="email"
         required
         v-model="enteredMail"
@@ -11,13 +12,14 @@
       />
       <label>Parola</label>
       <TfPasswordView
+        class="passwordDiv"
         type="password"
         :feedback="false"
         required
         v-model="enteredPassword"
         placeholder="Parola gir"
       />
-      <TfButtonView type="submit" label = "Giriş Yap"/>
+      <TfButtonView type="submit" label="Giriş Yap" />
     </form>
   </div>
 </template>
@@ -54,4 +56,34 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+form>label {
+  display: flex;
+  justify-content: center;
+}
+.container {
+  background-color: #64ccc5;
+  min-height: 500px;
+}
+
+h3 {
+  display: flex;
+  justify-content: center;
+}
+.p-password {
+  display: flex;
+  justify-content: center;
+}
+.p-password > input {
+  min-width: 300px;
+}
+</style>
