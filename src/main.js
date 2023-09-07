@@ -16,6 +16,7 @@ import InputMask from "primevue/inputmask";
 import Checkbox from "primevue/checkbox";
 import Card from 'primevue/card';
 import RadioButton from 'primevue/radiobutton';
+import AutoComplete from 'primevue/autocomplete';
 import "primevue/resources/themes/lara-light-indigo/theme.css";
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
@@ -47,6 +48,7 @@ app.component("TfInputMaskView", InputMask);
 app.component("TfToggleButtonView",ToggleButton);
 app.component("TfCardView",Card);
 app.component("TfRadioView",RadioButton);
+app.component("TfAutoComplete",AutoComplete);
 
 
 app.mount("#app");

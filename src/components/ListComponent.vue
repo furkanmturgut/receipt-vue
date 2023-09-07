@@ -1,22 +1,29 @@
 <template>
   <TfCardView v-for="receipt in slipsList" :key="receipt.id">
     <template #title>Fiş Tarihi: {{ receipt.receiptDate }}</template>
-    <template #content> Ödeme Tutarı: {{ receipt.price }}TL </template>
+    <template #subtitle> Ödeme Tutarı: {{ receipt.paymentMethod }} </template>
+    <!-- <template #content> Ödeme Tutarı: {{ receipt.price }}TL </template> -->
     <template #footer>
-      <div style="
+      <div
+        style="
           padding: 1.25rem 0 0 0;
           min-width: 250px;
           justify-content: space-evenly;
           display: flex;
-        ">
-        <TfButtonView icon="pi pi-search" label="Detay" @click="handleClick(receipt.slipsId)" />
+        "
+      >
+        <TfButtonView
+          icon="pi pi-search"
+          label="Detay"
+          @click="handleClick(receipt.slipsId)"
+        />
       </div>
     </template>
   </TfCardView>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref } from "vue";
 export default {
   props: ["slipsList"],
   emits: ["itemClick", "deleteClick"],
@@ -28,12 +35,14 @@ export default {
     Ayrıca, receipt'ı v-for döngüsünün içinde tanımladığınız için, setup içinde bu değişkeni kullanabilmek için
     önce ref veya reactive gibi reaktif bir değişken olarak tanımlamanız gerekebilir.
     */
+    // const yearSlice = dateInput.value.slice(0, 4);
+    // const monthSlice = dateInput.value.slice(5, 7);
+    // const daySlice = dateInput.value.slice(8, 10);
+    // const dateConvert = daySlice + "." + monthSlice + "." + yearSlice;
     const handleClick = (slipsId) => {
       id.value = slipsId;
       emit("itemClick", id.value);
     };
-
-
 
     return { handleClick };
   },

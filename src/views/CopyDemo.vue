@@ -1,193 +1,271 @@
 <template>
   <div>
-    <h1>Toggle Menu</h1>
-    <TfToggleButtonView v-model="isMenuOpen">
-      Aç/Kapat
-    </TfToggleButtonView>
-    <div v-if="isMenuOpen">
-      <form @submit.prevent="submitData">
-      <div id="fatura">
-        <h1 style="text-align: center;">Fatura</h1>
-        <video
-          ref="videoElement"
-          style="display: none"
-          id="video"
-          autoplay
-        ></video>
+    <h3 style="display: flex; justify-content: center">HomeView</h3>
+    <div class="container" id="homeViewContainer">
+      <p>Hoş geldin</p>
+      <TfSplitButtonView
+        v-if="!isSearchMode"
+        label="Fiş Ekle"
+        icon="pi pi-plus"
+        :model="splitMenu"
+        @click="addReceipt"
+      />
+
+      <div v-else>
         <TfButtonView
-          v-if="!isCameraOn || isPhotoTaken"
-          style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-          "
-          @click="requestCameraAccess"
-          >Kamerayı aç</TfButtonView
-        >
-        <TfButtonView
-          v-else
-          @click="takePhoto"
-          style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-          "
-          >📸</TfButtonView
-        >
-        <canvas ref="canvasElement" style="display: none"></canvas>
-        <img
-          v-if="isPhotoTaken"
-          :src="photoScreen"
-          id="video"
-          alt="Çekilen Fotoğraf"
+          label="Geri"
+          icon="pi pi-arrow-left"
+          @click="cancelSearch"
+          style="min-width: 100px"
+        />
+        <!-- <TfInputView v-model="searchText" placeholder="ID girin" @keydown.enter="searchReceipt" /> -->
+        <TfAutoComplete
+          v-model="selectedCompany"
+          dropdown
+          :suggestions="newArrayList"
+          @complete="autoCompSearch"
         />
       </div>
-      <input type="date" v-model="dateValue" style="width: auto; height: 2rem;" />
-      <TfButtonView type="submit" label="Kaydet" />
-    </form>
+      <list-component :slipsList="slipsList" @itemClick="handleClick">
+        <!-- Slipslist ismi değişebilir-->
+      </list-component>
     </div>
   </div>
 </template>
 
 <script>
 import {
-  getStorage,
-  ref as FBref,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
-import {
-  getFirestore,
-  addDoc,
+  where,
+  query,
+  getDocs,
+  orderBy,
   collection,
-  serverTimestamp,
+  getFirestore,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { onMounted, ref as vueRef } from "vue";
+import ListComponent from "@/components/ListComponent.vue";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 export default {
+  components: {
+    ListComponent,
+  },
   setup() {
     const auth = getAuth();
     const db = getFirestore();
-    const storage = getStorage();
-    const videoElement = ref(null);
-    const canvasElement = ref(null);
-    const photoPng = ref(null);
-    const photoScreen = ref(null);
-    const isCameraOn = ref(false);
-    const isPhotoTaken = ref(false);
-    const isMenuOpen = ref(false);
-    const dateValue = ref(null);
-    let cameraStream = null;
+    const router = useRouter();
+    const myId = vueRef(null);
+    const isUser = vueRef(null);
+    const adminId = vueRef(null);
+    const slipsList = vueRef([]);
+    const splitMenu = vueRef([]);
+    const isSearchMode = vueRef(false);
+    const searchText = vueRef("");
+    const selectedCompany = vueRef([]);
+    const newArrayList = vueRef([]);
 
-    const requestCameraAccess = async () => {
-      try {
-        isPhotoTaken.value = false;
-        cameraStream = await navigator.mediaDevices.getUserMedia({
-          video: true,
+    const sortByTime = async (type) => {
+      const q = query(collection(db, "infos"), orderBy("uploadDate", type));
+      /// listeyi boşalttık
+      await getDocs(q).then((querySnapshot) => {
+        querySnapshot.forEach(() => {
+          slipsList.value = [];
         });
-        videoElement.value.srcObject = cameraStream;
-        videoElement.value.style.display = "block";
-        videoElement.value.play();
-        isCameraOn.value = true;
-      } catch (error) {
-        console.error("Kamera hatası:", error);
-      }
+      });
+      // listeyi doldur
+      await getDocs(q).then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          slipsList.value.push(doc.data());
+        });
+      });
     };
 
-    const takePhoto = () => {
-      if (!cameraStream) return;
-      isPhotoTaken.value = false;
-
-      const context = canvasElement.value.getContext("2d");
-      canvasElement.value.width = videoElement.value.videoWidth;
-      canvasElement.value.height = videoElement.value.videoHeight;
-      context.drawImage(
-        videoElement.value,
-        0,
-        0,
-        canvasElement.value.width,
-        canvasElement.value.height
+    const paymentFilter = async (type) => {
+      const q = query(
+        collection(db, "infos"),
+        where("paymentMethod", "==", type)
       );
-      const imageData = canvasElement.value.toDataURL("image/png");
-      photoScreen.value = imageData;
-
-      canvasElement.value.toBlob((blob) => {
-        if (blob) photoPng.value = blob;
-      }, "image/png");
-      isPhotoTaken.value = true;
-
-      videoElement.value.pause();
-      videoElement.value.style.display = "none";
-      isCameraOn.value = false;
+      /// listeyi boşalttık
+      await getDocs(q).then((querySnapshot) => {
+        querySnapshot.forEach(() => {
+          slipsList.value = [];
+        });
+      });
+      // listeyi doldur
+      await getDocs(q).then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          slipsList.value.push(doc.data());
+        });
+      });
     };
 
-    const submitData = async () => {
-      if (photoPng.value) {
-        const id = Date.now();
-        const storageRef = FBref(storage, `slips/${id}`);
-        const fileSnapshot = await uploadBytes(storageRef, photoPng.value);
-        const downloadURL = await getDownloadURL(fileSnapshot.ref);
-        const yearSlice = dateValue.value.slice(0,4);
-        const monthSlice = dateValue.value.slice(5,7);
-        const daySlice = dateValue.value.slice(8,10);
-        const dateConvert = daySlice + '.' + monthSlice + '.' + yearSlice;
+    onMounted(async () => {
+      const querySnapshot = await getDocs(collection(db, "admins"));
 
-        console.log(typeof(dateConvert), dateConvert);
-        try {
+      querySnapshot.forEach((doc) => {
+        adminId.value = doc.data().id;
+        // console.log("Admin id:" + adminId.value);
+      });
 
-          const docRef = addDoc(collection(db, "slips"), {
-            uploadDate: serverTimestamp(),
-            receiptDate: "",
-            slipUrl: downloadURL,
-            fisUrl: "",
-            id: auth.currentUser.uid,
-          });
-          console.log("Document written with ID: ", docRef.id);
-        } catch (e) {
-          console.log(e);
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          myId.value = user.uid;
+          if (user.uid === adminId.value) {
+            console.log("Admin Girişi");
+            isUser.value = false;
+            fetchData();
+          } else {
+            console.log("Kullanıcı Girişi");
+            isUser.value = true;
+            console.log("isUser: ", typeof isUser.value, isUser.value);
+            fetchUserData();
+          }
         }
-      } else {
-        alert("Kayıt yapılmadı");
-      }
+      });
+
+      splitMenu.value = [
+        {
+          label: "Azalan Sırala",
+          icon: "pi pi-sort-numeric-up-alt",
+          command: () => {
+            console.log("Sıralandı");
+            sortByTime("desc");
+          },
+        },
+        {
+          label: "Artan Sırala",
+          icon: "pi pi-sort-numeric-down-alt",
+          command: () => {
+            sortByTime("asc");
+          },
+        },
+        {
+          label: `Kartla ödemeleri filtrele`,
+          icon: "pi pi-credit-card",
+          command: () => {
+            paymentFilter("kart");
+          },
+        },
+        {
+          label: `Nakitle ödemeleri filtrele`,
+          icon: "pi pi-money-bill",
+          command: () => {
+            paymentFilter("nakit");
+          },
+        },
+        {
+          label: `Kullanıcıya göre filtrele /admin`,
+          icon: "pi pi-cog",
+          command: () => {
+            isSearchMode.value = true;
+          },
+          visible: () => !isUser.value,
+        },
+      ];
+
+      const fetchData = async () => {
+        const q = query(collection(db, "infos"));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          slipsList.value.push(doc.data());
+        });
+      };
+
+      const fetchUserData = async () => {
+        const q = query(collection(db, "infos"), where("id", "==", myId.value));
+        // Sorguyu kullanarak verileri alın
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          slipsList.value.push(doc.data());
+        });
+      };
+    });
+
+    const addReceipt = () => {
+      router.push({ name: "AddReceiptView" });
+    };
+
+    const handleClick = (myId) => {
+      router.push({
+        name: "ReceiptDetailView",
+        params: { id: myId },
+      });
+    };
+
+    const cancelSearch = () => {
+      isSearchMode.value = false;
+      searchText.value = "";
+    };
+
+    const autoCompSearch = async (currentType) => {
+      
+      console.log("newarraylist", newArrayList);
+      let _company = [...Array(10).keys()];
+      newArrayList.value = currentType.query
+        ? [...Array(10).keys()].map((item) => currentType + item)
+        : _company;
+    };
+
+    const searchReceipt = async () => {
+      const q1 = query(collection(db, "companyInfo"));
+      const querySnapshot1 = await getDocs(q1);
+      querySnapshot1.forEach((doc) => {
+        newArrayList.value.push(doc.data());
+      });
+
+      const handleName = searchText.value;
+
+      const dataFilter = newArrayList.value.filter((data) => {
+        return data.companyName.toLowerCase().startsWith(handleName.toLowerCase());
+      });
+      console.log(dataFilter);
+
+      // console.log("Arama yapılıyor:", searchText.value);
+      // const handleName = searchText.value;
+      // const newData = vueRef([]);
+      // const q = query(collection(db,"companyInfo"), where("companyName", "in", [handleName]));
+
+      // const querySnapshot = await getDocs(q);
+      //   querySnapshot.forEach((doc) => {
+      //     newData.value.push(doc.data());
+      //     console.log(doc.data());
+      //   });
     };
 
     return {
-      submitData,
-      requestCameraAccess,
-      takePhoto,
-      //
-      videoElement,
-      canvasElement,
-      photoPng,
-      photoScreen,
-      dateValue,
-      //
-      isCameraOn,
-      isPhotoTaken,
-      isMenuOpen,
+      handleClick,
+      addReceipt,
+      searchReceipt,
+      cancelSearch,
+      autoCompSearch,
+      slipsList,
+      splitMenu,
+      searchText,
+      newArrayList,
+      selectedCompany,
+      isSearchMode,
+      isUser,
     };
   },
 };
 </script>
 
-<style scoped>
-#cameraDiv,
-#fatura,
-form{
-  display: grid;
-  justify-content: center;
-  grid-template-columns: 1fr;
-}
-#video {
-  max-height: 300px;
-}
-#card {
+<style>
+#homeViewContainer {
+  background-color: #64ccc5;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  gap: 15px;
+  width: auto;
+  min-height: 400px;
   align-items: center;
+  justify-content: flex-start;
+  align-content: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+h3 {
+  display: flex;
+  justify-content: center;
 }
 </style>
-

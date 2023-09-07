@@ -3,7 +3,29 @@
     <h3 style="display: flex; justify-content: center">HomeView</h3>
     <div class="container" id="homeViewContainer">
       <p>Hoş geldin</p>
-      <TfSplitButtonView label="Fiş Ekle" icon="pi pi-plus" :model="splitMenu" @click="addReceipt" />
+      <TfSplitButtonView
+        v-if="!isSearchMode"
+        label="Fiş Ekle"
+        icon="pi pi-plus"
+        :model="splitMenu"
+        @click="addReceipt"
+      />
+
+      <div v-else>
+        <TfButtonView
+          label="Geri"
+          icon="pi pi-arrow-left"
+          @click="cancelSearch"
+          style="min-width: 100px"
+        />
+        <TfInputView v-model="searchText" placeholder="ID girin" @keydown.enter="searchReceipt" /> -
+        <TfAutoComplete
+          v-model="selectedCompany"
+          dropdown
+          :suggestions="newArrayList"
+          @complete="autoCompSearch"
+        />
+      </div>
       <list-component :slipsList="slipsList" @itemClick="handleClick">
         <!-- Slipslist ismi değişebilir-->
       </list-component>
@@ -16,14 +38,14 @@ import {
   where,
   query,
   getDocs,
+  orderBy,
   collection,
   getFirestore,
-  orderBy,
 } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { onMounted, ref as vueRef } from "vue";
 import { useRouter } from "vue-router";
+import { onMounted, ref as vueRef } from "vue";
 import ListComponent from "@/components/ListComponent.vue";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 export default {
   components: {
     ListComponent,
@@ -33,28 +55,47 @@ export default {
     const db = getFirestore();
     const router = useRouter();
     const myId = vueRef(null);
-    const isUser = vueRef(true);
+    const isUser = vueRef(null);
     const adminId = vueRef(null);
     const slipsList = vueRef([]);
     const splitMenu = vueRef([]);
-    //SplitMenu aşağıda tanımlı
+    const isSearchMode = vueRef(false);
+    const searchText = vueRef("");
+    const selectedCompany = vueRef([]);
+    const newArrayList = vueRef([]);
 
-    const sorts = async (type) => {
-      const q = query(
-        collection(db, "infos"),
-        orderBy("uploadDate", type),
-      );
-      /// listeyi boşalttık 
+    const sortByTime = async (type) => {
+      const q = query(collection(db, "infos"), orderBy("uploadDate", type));
+      /// listeyi boşalttık
       await getDocs(q).then((querySnapshot) => {
         querySnapshot.forEach(() => {
           slipsList.value = [];
-        })
+        });
       });
       // listeyi doldur
       await getDocs(q).then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           slipsList.value.push(doc.data());
-        })
+        });
+      });
+    };
+
+    const paymentFilter = async (type) => {
+      const q = query(
+        collection(db, "infos"),
+        where("paymentMethod", "==", type)
+      );
+      /// listeyi boşalttık
+      await getDocs(q).then((querySnapshot) => {
+        querySnapshot.forEach(() => {
+          slipsList.value = [];
+        });
+      });
+      // listeyi doldur
+      await getDocs(q).then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          slipsList.value.push(doc.data());
+        });
       });
     };
 
@@ -72,12 +113,11 @@ export default {
           if (user.uid === adminId.value) {
             console.log("Admin Girişi");
             isUser.value = false;
-            console.log('isUser: ', typeof isUser.value, isUser.value);
             fetchData();
           } else {
             console.log("Kullanıcı Girişi");
             isUser.value = true;
-            console.log('isUser: ', typeof isUser.value, isUser.value);
+            console.log("isUser: ", typeof isUser.value, isUser.value);
             fetchUserData();
           }
         }
@@ -85,18 +125,32 @@ export default {
 
       splitMenu.value = [
         {
-          label: "Sırala",
-          icon: "pi pi-sort-numeric-down-alt", //pi-sort-amount-down
+          label: "Azalan Sırala",
+          icon: "pi pi-sort-numeric-up-alt",
           command: () => {
             console.log("Sıralandı");
-            sorts('asc' || 'desc');
+            sortByTime("desc");
           },
         },
         {
-          label: `Ödeme Şekline Göre Filtrele`,
+          label: "Artan Sırala",
+          icon: "pi pi-sort-numeric-down-alt",
+          command: () => {
+            sortByTime("asc");
+          },
+        },
+        {
+          label: `Kartla ödemeleri filtrele`,
           icon: "pi pi-credit-card",
           command: () => {
-            console.log("Nakit" || "Kart");
+            paymentFilter("kart");
+          },
+        },
+        {
+          label: `Nakitle ödemeleri filtrele`,
+          icon: "pi pi-money-bill",
+          command: () => {
+            paymentFilter("nakit");
           },
         },
         {
@@ -104,8 +158,9 @@ export default {
           icon: "pi pi-cog",
           command: () => {
             console.log("Filtrelendi");
+            isSearchMode.value = true;
           },
-          visible: (isUser.value == true),
+          visible: () => !isUser.value,
         },
       ];
 
@@ -138,11 +193,53 @@ export default {
       });
     };
 
+    const cancelSearch = () => {
+      isSearchMode.value = false;
+      searchText.value = "";
+    };
+
+    const autoCompSearch = (currentType) => {
+      console.log(currentType);
+    };
+
+    const searchReceipt = async () => {
+      const q1 = query(collection(db, "companyInfo"));
+      const querySnapshot1 = await getDocs(q1);
+      querySnapshot1.forEach((doc) => {
+        newArrayList.value.push(doc.data());
+      });
+
+      const handleName = searchText.value;
+
+      const dataFilter = newArrayList.value.filter((data) => {
+        return data.companyName == handleName
+      });
+      console.log(dataFilter);
+
+      // console.log("Arama yapılıyor:", searchText.value);
+      // const handleName = searchText.value;
+      // const newData = vueRef([]);
+      // const q = query(collection(db,"companyInfo"), where("companyName", "in", [handleName]));
+
+      // const querySnapshot = await getDocs(q);
+      //   querySnapshot.forEach((doc) => {
+      //     newData.value.push(doc.data());
+      //     console.log(doc.data());
+      //   });
+    };
+
     return {
       handleClick,
       addReceipt,
+      searchReceipt,
+      cancelSearch,
+      autoCompSearch,
       slipsList,
       splitMenu,
+      searchText,
+      newArrayList,
+      selectedCompany,
+      isSearchMode,
       isUser,
     };
   },

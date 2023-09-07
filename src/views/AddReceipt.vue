@@ -4,144 +4,72 @@
     <form @submit.prevent="submitData">
       <div id="fatura">
         <h1 style="text-align: center">Fatura</h1>
-        <video
-          ref="videoElement1"
-          class="videoCam"
-          style="display: none"
-          id="video1"
-          autoplay
-        ></video>
-        <TfButtonView
-          v-if="!isCameraOn1 || isPhotoTaken1"
-          class="openCamera1"
-          @click="requestCameraAccess1"
-          style="
+        <video ref="videoElement1" class="videoCam" style="display: none" id="video1" autoplay></video>
+        <TfButtonView v-if="!isCameraOn1 || isPhotoTaken1" class="openCamera1" @click="requestCameraAccess1" style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          "
-          >Kamerayı aç</TfButtonView
-        >
-        <TfButtonView
-          v-else
-          @click="takePhoto1"
-          style="
+          ">Kamerayı aç</TfButtonView>
+        <TfButtonView v-else @click="takePhoto1" style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          "
-          >📸</TfButtonView
-        >
+          ">📸</TfButtonView>
         <canvas ref="canvasElement1" style="display: none"></canvas>
-        <img
-          v-if="isPhotoTaken1"
-          :src="photoScreen1"
-          id="video"
-          alt="Çekilen Fotoğraf"
-          class="videoCam"
-        />
+        <img v-if="isPhotoTaken1" :src="photoScreen1" id="video" alt="Çekilen Fotoğraf" class="videoCam" />
       </div>
       <!-- FATURA/SLİP -->
       <!-- FATURA/SLİP -->
       <!-- FATURA/SLİP -->
       <div class="slip">
         <h1 style="text-align: center">Slip</h1>
-        <video
-          class="videoCam"
-          id="video2"
-          ref="videoElement2"
-          style="display: none"
-          autoplay
-        />
-        <TfButtonView
-          v-if="!isCameraOn2 || isPhotoTaken2"
-          class="openCamera2"
-          @click="requestCameraAccess2"
-          style="
+        <video class="videoCam" id="video2" ref="videoElement2" style="display: none" autoplay />
+        <TfButtonView v-if="!isCameraOn2 || isPhotoTaken2" class="openCamera2" @click="requestCameraAccess2" style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          "
-          >Kamerayı aç</TfButtonView
-        >
-        <TfButtonView
-          v-else
-          @click="takePhoto2"
-          style="
+          ">Kamerayı aç</TfButtonView>
+        <TfButtonView v-else @click="takePhoto2" style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          "
-          >📸</TfButtonView
-        >
+          ">📸</TfButtonView>
         <canvas ref="canvasElement2" style="display: none"></canvas>
-        <img
-          v-if="isPhotoTaken2"
-          :src="photoScreen2"
-          class="videoCam"
-          id="video"
-          alt="Çekilen Fotoğraf"
-        />
+        <img v-if="isPhotoTaken2" :src="photoScreen2" class="videoCam" id="video" alt="Çekilen Fotoğraf" />
       </div>
       <!-- SLİP/TARİH -->
       <!-- SLİP/TARİH -->
       <!-- SLİP/TARİH -->
       <h1 style="text-align: center">Fatura Tarihi</h1>
-      <TfInputView
-        :class="{ 'p-invalid': !dateInput }"
-        type="date"
-        v-model="dateInput"
-        style="width: auto; height: 2rem"
-      />
+      <TfInputView :class="{ 'p-invalid': !dateInput }" type="date" v-model="dateInput"
+        style="width: auto; height: 2rem" />
       <!-- TARİH/TUTAR -->
       <!-- TARİH/TUTAR -->
       <!-- TARİH/TUTAR -->
       <h1 style="text-align: center">Tutar</h1>
 
-      <TfInputView
-        :class="{ 'p-invalid': !paymentPrice }"
-        type="number"
-        style="width: auto; height: 2rem"
-        v-model="paymentPrice"
-        placeholder="Ödeme Tutarı (TL)"
-      />
+      <TfInputView :class="{ 'p-invalid': !paymentPrice }" type="number" style="width: auto; height: 2rem"
+        v-model="paymentPrice" placeholder="Ödeme Tutarı (TL)" />
 
       <!-- TUTAR/ÖDEME ŞEKLİ -->
       <!-- TUTAR/ÖDEME ŞEKLİ -->
       <h1 style="text-align: center">Ödeme Şekli</h1>
-      <div
-        style="flex-wrap: wrap; justify-content: center; column-gap: 25px"
-        class="flex"
-      >
+      <div style="flex-wrap: wrap; justify-content: center; column-gap: 25px" class="flex">
         <div class="flex align-items-center">
           <TfRadioView v-model="paymentMethod" name="kart" value="kart" />
-          <label
-            for="kart"
-            style="font-size: 1.5rem; font-weight: bold"
-            class="ml-2"
-            >Kart</label
-          >
+          <label for="kart" style="font-size: 1.5rem; font-weight: bold" class="ml-2">Kart</label>
         </div>
         <div class="flex align-items-center">
           <TfRadioView v-model="paymentMethod" name="nakit" value="nakit" />
-          <label
-            for="nakit"
-            style="font-size: 1.5rem; font-weight: bold"
-            class="ml-2"
-            >Nakit</label
-          >
+          <label for="nakit" style="font-size: 1.5rem; font-weight: bold" class="ml-2">Nakit</label>
         </div>
       </div>
       <!-- OdemeSekli//Kaydet Buton -->
-      <TfButtonView
-        style="text-transform: uppercase; font-size: large"
-        type="submit"
-        label="Kaydet"
-      />
+      <TfButtonView style="text-transform: uppercase; font-size: large" type="submit" label="Kaydet" />
     </form>
   </div>
 </template>
@@ -157,6 +85,9 @@ import {
   addDoc,
   collection,
   getFirestore,
+  query,
+  where,
+  getDocs,
   serverTimestamp,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
@@ -185,8 +116,10 @@ export default {
     const router = useRouter();
     let cameraStream1 = null;
     let cameraStream2 = null;
+    const newArrayList = ref([]);
 
-   
+
+
     const requestCameraAccess1 = async () => {
       try {
         isPhotoTaken1.value = false;
@@ -290,7 +223,6 @@ export default {
         videoElement2.value.style.display = "none";
       }
     };
-
     const submitData = async () => {
       if (
         photoPng1.value &&
@@ -308,20 +240,27 @@ export default {
           const fileSnapshot2 = await uploadBytes(storageRef2, photoPng2.value);
           const downloadURL1 = await getDownloadURL(fileSnapshot1.ref);
           const downloadURL2 = await getDownloadURL(fileSnapshot2.ref);
-          console.log("1", downloadURL1);
-          const yearSlice = dateInput.value.slice(0, 4);
-          const monthSlice = dateInput.value.slice(5, 7);
-          const daySlice = dateInput.value.slice(8, 10);
-          const dateConvert = daySlice + "." + monthSlice + "." + yearSlice;
           const random = Math.floor(Math.random() * 100000);
           stopCamera1();
           stopCamera2();
 
+          const cN = query(collection(db, "companyInfo"), where("id", "==", auth.currentUser.uid));
+          const querySnapshot1 = await getDocs(cN);
+          querySnapshot1.forEach((doc) => {
+            newArrayList.value.push(doc.data());
+            console.log(newArrayList)
+
+          });
+
+
+
+
           addDoc(collection(db, "infos"), {
             id: auth.currentUser.uid,
+            //companyName: newArrayList.companyName,
             slipsId: random,
             uploadDate: serverTimestamp(),
-            receiptDate: dateConvert,
+            receiptDate: dateInput.value,
             bilUrl: downloadURL1,
             slipsUrl: downloadURL2,
             price: paymentPrice.value,
