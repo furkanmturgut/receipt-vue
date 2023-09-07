@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router/router.js";
 import { initializeApp } from "firebase/app";
+
 import PrimeVue from "primevue/config";
 import Password from "primevue/password";
 import Button from "primevue/button";
@@ -35,6 +36,8 @@ initializeApp(firebaseConfig);
 const app = createApp(App);
 app.use(router);
 app.use(PrimeVue);
+app.use(ConfirmationService);
+
 app.component("TfButtonView", Button);
 app.component("TfPasswordView", Password);
 app.component("TfInputView", InputText);
