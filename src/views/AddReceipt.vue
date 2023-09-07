@@ -4,72 +4,144 @@
     <form @submit.prevent="submitData">
       <div id="fatura">
         <h1 style="text-align: center">Fatura</h1>
-        <video ref="videoElement1" class="videoCam" style="display: none" id="video1" autoplay></video>
-        <TfButtonView v-if="!isCameraOn1 || isPhotoTaken1" class="openCamera1" @click="requestCameraAccess1" style="
+        <video
+          ref="videoElement1"
+          class="videoCam"
+          style="display: none"
+          id="video1"
+          autoplay
+        ></video>
+        <TfButtonView
+          v-if="!isCameraOn1 || isPhotoTaken1"
+          class="openCamera1"
+          @click="requestCameraAccess1"
+          style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          ">Kamerayı aç</TfButtonView>
-        <TfButtonView v-else @click="takePhoto1" style="
+          "
+          >Kamerayı aç</TfButtonView
+        >
+        <TfButtonView
+          v-else
+          @click="takePhoto1"
+          style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          ">📸</TfButtonView>
+          "
+          >📸</TfButtonView
+        >
         <canvas ref="canvasElement1" style="display: none"></canvas>
-        <img v-if="isPhotoTaken1" :src="photoScreen1" id="video" alt="Çekilen Fotoğraf" class="videoCam" />
+        <img
+          v-if="isPhotoTaken1"
+          :src="photoScreen1"
+          id="video"
+          alt="Çekilen Fotoğraf"
+          class="videoCam"
+        />
       </div>
       <!-- FATURA/SLİP -->
       <!-- FATURA/SLİP -->
       <!-- FATURA/SLİP -->
       <div class="slip">
         <h1 style="text-align: center">Slip</h1>
-        <video class="videoCam" id="video2" ref="videoElement2" style="display: none" autoplay />
-        <TfButtonView v-if="!isCameraOn2 || isPhotoTaken2" class="openCamera2" @click="requestCameraAccess2" style="
+        <video
+          class="videoCam"
+          id="video2"
+          ref="videoElement2"
+          style="display: none"
+          autoplay
+        />
+        <TfButtonView
+          v-if="!isCameraOn2 || isPhotoTaken2"
+          class="openCamera2"
+          @click="requestCameraAccess2"
+          style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          ">Kamerayı aç</TfButtonView>
-        <TfButtonView v-else @click="takePhoto2" style="
+          "
+          >Kamerayı aç</TfButtonView
+        >
+        <TfButtonView
+          v-else
+          @click="takePhoto2"
+          style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          ">📸</TfButtonView>
+          "
+          >📸</TfButtonView
+        >
         <canvas ref="canvasElement2" style="display: none"></canvas>
-        <img v-if="isPhotoTaken2" :src="photoScreen2" class="videoCam" id="video" alt="Çekilen Fotoğraf" />
+        <img
+          v-if="isPhotoTaken2"
+          :src="photoScreen2"
+          class="videoCam"
+          id="video"
+          alt="Çekilen Fotoğraf"
+        />
       </div>
       <!-- SLİP/TARİH -->
       <!-- SLİP/TARİH -->
       <!-- SLİP/TARİH -->
       <h1 style="text-align: center">Fatura Tarihi</h1>
-      <TfInputView type="date" v-model="dateInput" style="width: auto; height: 2rem" />
+      <TfInputView
+        :class="{ 'p-invalid': !dateInput }"
+        type="date"
+        v-model="dateInput"
+        style="width: auto; height: 2rem"
+      />
       <!-- TARİH/TUTAR -->
       <!-- TARİH/TUTAR -->
       <!-- TARİH/TUTAR -->
       <h1 style="text-align: center">Tutar</h1>
-      <TfInputView :class="errorInput" type="number" style="width: auto; height: 2rem" v-model="paymentPrice"
-        placeholder="Ödeme Tutarı (TL)" />
-      <!-- TUTAR/ÖDEME ŞEKLİ -->
+
+      <TfInputView
+        :class="{ 'p-invalid': !paymentPrice }"
+        type="number"
+        style="width: auto; height: 2rem"
+        v-model="paymentPrice"
+        placeholder="Ödeme Tutarı (TL)"
+      />
+
       <!-- TUTAR/ÖDEME ŞEKLİ -->
       <!-- TUTAR/ÖDEME ŞEKLİ -->
       <h1 style="text-align: center">Ödeme Şekli</h1>
-      <div style="flex-wrap: wrap; justify-content: center; column-gap: 25px" class="flex">
+      <div
+        style="flex-wrap: wrap; justify-content: center; column-gap: 25px"
+        class="flex"
+      >
         <div class="flex align-items-center">
-          <TfRadioView v-model="odemeSekli" name="kart" value="kart" />
-          <label for="kart" style="font-size: 1.5rem; font-weight: bold" class="ml-2">Kart</label>
+          <TfRadioView v-model="paymentMethod" name="kart" value="kart" />
+          <label
+            for="kart"
+            style="font-size: 1.5rem; font-weight: bold"
+            class="ml-2"
+            >Kart</label
+          >
         </div>
         <div class="flex align-items-center">
-          <TfRadioView v-model="odemeSekli" name="nakit" value="nakit" />
-          <label for="nakit" style="font-size: 1.5rem; font-weight: bold" class="ml-2">Nakit</label>
+          <TfRadioView v-model="paymentMethod" name="nakit" value="nakit" />
+          <label
+            for="nakit"
+            style="font-size: 1.5rem; font-weight: bold"
+            class="ml-2"
+            >Nakit</label
+          >
         </div>
       </div>
-
-      <!-- listviewde tutar yok, tutar girmese de submit edebiliyor -->
-
-      <TfButtonView style="text-transform: uppercase; font-size: large" type="submit" label="Kaydet" />
+      <!-- OdemeSekli//Kaydet Buton -->
+      <TfButtonView
+        style="text-transform: uppercase; font-size: large"
+        type="submit"
+        label="Kaydet"
+      />
     </form>
   </div>
 </template>
@@ -88,7 +160,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 export default {
   setup() {
@@ -109,28 +181,19 @@ export default {
     const isCameraOn2 = ref(false);
     const isPhotoTaken1 = ref(false);
     const isPhotoTaken2 = ref(false);
-    const odemeSekli = ref(null);
+    const paymentMethod = ref(null);
     const router = useRouter();
-    let cameraStream = null;
-    let isActive = ref(true);
+    let cameraStream1 = null;
+    let cameraStream2 = null;
 
-    const errorInput = computed(() => {
-      if (dateInput.value === null) {
-        isActive.value = false;
-      } else {
-        isActive.value = true;
-      }
-
-      return isActive.value ? '' : 'p-invalid';
-    });
-
+   
     const requestCameraAccess1 = async () => {
       try {
         isPhotoTaken1.value = false;
-        cameraStream = await navigator.mediaDevices.getUserMedia({
+        cameraStream1 = await navigator.mediaDevices.getUserMedia({
           video: true,
         });
-        videoElement1.value.srcObject = cameraStream;
+        videoElement1.value.srcObject = cameraStream1;
         videoElement1.value.style.display = "block";
         videoElement1.value.play();
         isCameraOn1.value = true;
@@ -140,7 +203,7 @@ export default {
     };
 
     const takePhoto1 = () => {
-      if (!cameraStream) return;
+      if (!cameraStream1) return;
       isPhotoTaken1.value = false;
 
       const context = canvasElement1.value.getContext("2d");
@@ -153,25 +216,36 @@ export default {
         canvasElement1.value.width,
         canvasElement1.value.height
       );
-      const imageData = canvasElement1.value.toDataURL("image/png");
+      const imageData = canvasElement1.value.toDataURL("image/jpeg");
       photoScreen1.value = imageData;
 
       canvasElement1.value.toBlob((blob) => {
         if (blob) photoPng1.value = blob;
-      }, "image/png");
+      }, "image/jpeg");
       isPhotoTaken1.value = true;
 
       videoElement1.value.pause();
       videoElement1.value.style.display = "none";
       isCameraOn1.value = false;
     };
+
+    const stopCamera1 = () => {
+      if (cameraStream1) {
+        cameraStream1.getTracks().forEach((track) => {
+          track.stop();
+        });
+        videoElement1.value.srcObject = null;
+        videoElement1.value.style.display = "none";
+      }
+    };
+
     const requestCameraAccess2 = async () => {
       try {
         isPhotoTaken2.value = false;
-        cameraStream = await navigator.mediaDevices.getUserMedia({
+        cameraStream2 = await navigator.mediaDevices.getUserMedia({
           video: true,
         });
-        videoElement2.value.srcObject = cameraStream;
+        videoElement2.value.srcObject = cameraStream2;
         videoElement2.value.style.display = "block";
         videoElement2.value.play();
         isCameraOn2.value = true;
@@ -181,7 +255,7 @@ export default {
     };
 
     const takePhoto2 = () => {
-      if (!cameraStream) return;
+      if (!cameraStream2) return;
       isPhotoTaken2.value = false;
 
       const context = canvasElement2.value.getContext("2d");
@@ -207,36 +281,51 @@ export default {
       isCameraOn2.value = false;
     };
 
+    const stopCamera2 = () => {
+      if (cameraStream2) {
+        cameraStream2.getTracks().forEach((track) => {
+          track.stop();
+        });
+        videoElement2.value.srcObject = null;
+        videoElement2.value.style.display = "none";
+      }
+    };
+
     const submitData = async () => {
-      if (photoPng1.value && photoPng2.value && dateInput.value && paymentPrice.value) {
+      if (
+        photoPng1.value &&
+        photoPng2.value &&
+        dateInput.value &&
+        paymentPrice.value &&
+        paymentMethod.value
+
+      ) {
         try {
           const id = Date.now();
-          const storageRef = FBref(storage, `slips/${id}`);
-          const fileSnapshot1 = await uploadBytes(
-            storageRef,
-            photoPng1.value
-          );
-          const fileSnapshot2 = await uploadBytes(
-            storageRef,
-            photoPng2.value
-          );
+          const storageRef = FBref(storage, `infos/${id}`);
+          const storageRef2 = FBref(storage, `receipt/${id}`);
+          const fileSnapshot1 = await uploadBytes(storageRef, photoPng1.value);
+          const fileSnapshot2 = await uploadBytes(storageRef2, photoPng2.value);
           const downloadURL1 = await getDownloadURL(fileSnapshot1.ref);
           const downloadURL2 = await getDownloadURL(fileSnapshot2.ref);
+          console.log("1", downloadURL1);
           const yearSlice = dateInput.value.slice(0, 4);
           const monthSlice = dateInput.value.slice(5, 7);
           const daySlice = dateInput.value.slice(8, 10);
           const dateConvert = daySlice + "." + monthSlice + "." + yearSlice;
           const random = Math.floor(Math.random() * 100000);
+          stopCamera1();
+          stopCamera2();
 
-          addDoc(collection(db, "slips"), {
+          addDoc(collection(db, "infos"), {
+            id: auth.currentUser.uid,
+            slipsId: random,
             uploadDate: serverTimestamp(),
             receiptDate: dateConvert,
             bilUrl: downloadURL1,
-            slipUrl: downloadURL2,
-            receiptUrl: "",
-            id: auth.currentUser.uid,
-            slipsId: random,
+            slipsUrl: downloadURL2,
             price: paymentPrice.value,
+            paymentMethod: paymentMethod.value,
           });
 
           router.push({ name: "HomeView" });
@@ -256,6 +345,8 @@ export default {
       requestCameraAccess2,
       takePhoto1,
       takePhoto2,
+      stopCamera1,
+      stopCamera2,
       //
       videoElement1,
       videoElement2,
@@ -266,14 +357,13 @@ export default {
       photoPng1,
       photoPng2,
       dateInput,
-      odemeSekli,
+      paymentMethod,
       paymentPrice,
       //
       isCameraOn1,
       isCameraOn2,
       isPhotoTaken1,
       isPhotoTaken2,
-      errorInput
     };
   },
 };

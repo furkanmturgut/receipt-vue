@@ -4,12 +4,7 @@
     <h3 style="display: flex; justify-content: center">HomeView</h3>
     <div class="container" id="homeViewContainer">
       <p>Hoş geldin</p>
-      <TfSplitButtonView
-        @click="addReceipt"
-        :model="splitMenu"
-        label="Fiş Ekle"
-        icon="pi pi-plus"
-      />
+      <TfSplitButtonView @click="addReceipt" :model="splitMenu" label="Fiş Ekle" icon="pi pi-plus" />
       <list-component :slipsList="slipsList" @itemClick="handleClick"></list-component>
     </div>
   </div>
@@ -24,7 +19,7 @@ import {
   where,
 } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { onMounted, ref } from "vue";
+import { onMounted, ref as vueRef } from "vue";
 import { useRouter } from "vue-router";
 import ListComponent from "@/components/ListComponent.vue";
 export default {
@@ -35,10 +30,10 @@ export default {
     const db = getFirestore();
     const auth = getAuth();
     const router = useRouter();
-    const isUser = ref(false);
-    const myId = ref(null);
-    const adminId = ref(null);
-    const slipsList = ref([]);
+    const isUser = vueRef(false);
+    const myId = vueRef(null);
+    const adminId = vueRef(null);
+    const slipsList = vueRef([]);
     const splitMenu = [
       {
         label: "Sırala",
@@ -87,7 +82,7 @@ export default {
       });
 
       const fetchData = async () => {
-        const q = query(collection(db, "slips"));
+        const q = query(collection(db, "infos"));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           slipsList.value.push(doc.data());
@@ -95,7 +90,7 @@ export default {
       };
 
       const fetchUserData = async () => {
-        const q = query(collection(db, "slips"), where("id", "==", myId.value));
+        const q = query(collection(db, "infos"), where("id", "==", myId.value));
         // Sorguyu kullanarak verileri alın
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
@@ -120,7 +115,7 @@ export default {
         name: "ReceiptDetailView",
         params: { id: myId },
       });
-      console.log("Emit", myId);
+      // console.log("Emit", myId);
     };
 
     return {
@@ -129,6 +124,7 @@ export default {
       addReceipt,
       splitMenu,
       handleClick,
+      
     };
   },
 };
@@ -153,105 +149,5 @@ h3 {
   justify-content: center;
 }
 
-
-.flex {
-  display: flex;
-}
-
-.flex-column {
-  flex-direction: column;
-}
-
-.xl:flex-row {
-  @media (min-width: 1200px) {
-    flex-direction: row;
-  }
-}
-
-.align-items-start {
-  align-items: flex-start;
-}
-
-.xl:align-items-start {
-  @media (min-width: 1200px) {
-    align-items: start;
-  }
-}
-
-.align-items-center {
-  align-items: center;
-}
-
-.xl:align-items-center {
-  @media (min-width: 1200px) {
-    align-items: center;
-  }
-}
-
-.align-items-end {
-  align-items: end;
-}
-
-.xl:align-items-end {
-  @media (min-width: 1200px) {
-    align-items: end;
-  }
-}
-
-.gap-4 {
-  gap: 4px;
-}
-
-.sm:gap-4 {
-  gap: 4px;
-}
-
-.xl:gap-4 {
-  gap: 4px;
-}
-
-.sm:gap-2 {
-  gap: 2px;
-}
-
-.w-9 {
-  width: 9rem;
-}
-
-.sm:w-16rem {
-  width: 16rem;
-}
-
-.xl:w-10rem {
-  width: 10rem;
-}
-
-.shadow-2 {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.block {
-  display: block;
-}
-
-.mx-auto {
-  margin: 0 auto;
-}
-
-.border-round {
-  border-radius: 5px;
-}
-
-.w-8rem {
-  width: 8rem;
-}
-
-.w-6rem {
-  width: 6rem;
-}
-
-.w-3rem {
-  width: 3rem;
-}
 
 </style>

@@ -1,72 +1,67 @@
 <template>
-  <TfDataView :value="detailList">
-  <template v-for="item in detailList" :key="item.id">
-    <div class="col-12">
-      <div
-        class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4"
-      >
-        <img
-          class="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round"
-          :src="`https://primefaces.org/cdn/primevue/images/product/${item.bilUrl}`"
-        />
-        <divF
-          class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4"
-        >
+  <div :value="detailList">
+    <template v-for="item in detailList" :key="item.id">
+      <div class="col-12">
+        <div class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4">
+          <img class="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round" :src="`${item.bilUrl}`"
+            :alt="item.id" />
+          <img class="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round" :src="`${item.slipsUrl}`"
+            :alt="item.id" />
           <div
-            class="flex flex-column align-items-center sm:align-items-start gap-3"
-          >
-<!-- rating -->
-            <div class="flex align-items-center gap-3">
-              <span class="flex align-items-center gap-2">
-                <i class="pi pi-tag"></i>
-                <span class="font-semibold">{{ item.receiptDate }}</span>
-              </span>
+            class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
+            <div class="flex flex-column align-items-center sm:align-items-start gap-3">
+              <div class="text-2xl font-bold text-900">
+                {{ item.receiptDate }}
+              </div>
+              <!-- rating -->
+              <div class="flex align-items-center gap-3">
+                <span class="flex align-items-center gap-2">
+                  <i class="pi pi-wallet"></i>
+                  <span class="font-semibold">{{ item.paymentMethod }}</span>
+                </span>
+              </div>
+            </div>
+            <div class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
+              <span class="text-2xl font-semibold"> ${{ item.price }}</span>
+              <TfButtonView icon="pi pi-file-edit" severity="warning" rounded @click="updateClick"></TfButtonView>
+              <TfButtonView icon="pi pi-times" severity="danger" rounded @click="deleteClick(item.slipsId)">
+              </TfButtonView>
             </div>
           </div>
-          <div
-            class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2"
-          >
-            <span class="text-2xl font-semibold">
-              ${{ item.price }}</span
-            >
-          </div>
-        </divF>
+        </div>
       </div>
-    </div>
-  </template>
-</TfDataView>
-
-  <div>
-    <!--<div v-for="detail in detailList" :key="detail.id">
-      <div>
-        <label>Fatura</label>
-        <img :src="detail.bilUrl" alt="" />
-      </div>
-
-      <div>
-        <label>Slip</label>
-        <img :src="detail.slipUrl" alt="" />
-      </div>
-
-      <div>
-        <TfInputView type="text" :value="detail.price + ' TL'" disabled />
-      </div>
-      <div>
-        <TfInputView type="text" :value="detail.receiptDate" disabled />
-      </div>
-
-      <div>
-        <p>Ödeme Yönteminiz</p>
-      </div>
-
-      <TfButtonView @click="updateReceipt">Güncelle</TfButtonView>
-    </div>-->
+    </template>
   </div>
+
+  <div></div>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+  />
 </template>
 
 <script>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
 export default {
   props: ["detailList"],
+  emits: ["deleteClick"],
+  setup(props, { emit }) {
+    const id = ref(null);
+    const router = useRouter();
+
+    const deleteClick = (slipsId) => {
+      id.value = slipsId;
+      emit("deleteClick", id.value);
+    };
+
+    const updateClick = () => {
+      router.push({name:'HomeView'})
+    };
+
+    return { deleteClick, updateClick };
+  },
 };
 </script>
 

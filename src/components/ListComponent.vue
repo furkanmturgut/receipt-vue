@@ -16,7 +16,6 @@
           label="Detay"
           @click="handleClick(receipt.slipsId)"
         />
-        <TfButtonView icon="pi pi-times" severity="danger" label="Sil" />
       </div>
     </template>
   </TfCardView>
@@ -26,21 +25,21 @@
 import {ref} from 'vue'
 export default {
   props: ["slipsList"],
-  emits: ["itemClick"],
+  emits: ["itemClick","deleteClick"],
 
   setup(props, { emit }) {
     const id = ref(null); 
-
-    /* 
-    
+    /*
     receipt.slipsId'yi id adında bir değişkene atamadan önce receipt değişkenini tanımlamanız gerekiyor. 
-    Ayrıca, receipt'ı v-for döngüsünün içinde tanımladığınız için, setup içinde bu değişkeni kullanabilmek için 
+    Ayrıca, receipt'ı v-for döngüsünün içinde tanımladığınız için, setup içinde bu değişkeni kullanabilmek için
     önce ref veya reactive gibi reaktif bir değişken olarak tanımlamanız gerekebilir.
     */
     const handleClick = (slipsId) => {
       id.value = slipsId; 
       emit("itemClick", id.value); 
     };
+
+    
 
     return { handleClick };
   },

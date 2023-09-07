@@ -17,7 +17,7 @@ import {
   deleteDoc
 
 } from "firebase/firestore";
-import { onMounted, provide, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import DetailComponent from '@/components/DetailComponent.vue';
 export default {
   components: {
@@ -66,7 +66,7 @@ export default {
 
    
 
-    return { detailList,deleteItem,updatePage}
+    return { detailList,deleteItem}
   }
 
 }

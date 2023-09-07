@@ -18,6 +18,8 @@ import Card from 'primevue/card';
 import DataView from 'primevue/dataview';
 import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions'
 import RadioButton from 'primevue/radiobutton';
+import ConfirmDialog from 'primevue/confirmdialog';
+import ConfirmationService from 'primevue/confirmationservice';
 import "primevue/resources/themes/lara-light-indigo/theme.css";
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
@@ -49,9 +51,10 @@ app.component("TfUploadView", FileUpload);
 app.component("TfInputMaskView", InputMask);
 app.component("TfToggleButtonView",ToggleButton);
 app.component("TfCardView",Card);
-app.component("TfDataView",DataView);
+app.component("DataView",DataView);
 app.component("TfDataViewLayout",DataViewLayoutOptions);
 app.component("TfRadioView",RadioButton);
+app.component("TfConfirmView",ConfirmDialog);
 
 
 app.mount("#app");
