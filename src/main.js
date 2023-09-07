@@ -15,11 +15,7 @@ import FileUpload from "primevue/fileupload";
 import InputMask from "primevue/inputmask";
 import Checkbox from "primevue/checkbox";
 import Card from 'primevue/card';
-import DataView from 'primevue/dataview';
-import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions'
 import RadioButton from 'primevue/radiobutton';
-import ConfirmDialog from 'primevue/confirmdialog';
-import ConfirmationService from 'primevue/confirmationservice';
 import "primevue/resources/themes/lara-light-indigo/theme.css";
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
@@ -38,7 +34,6 @@ initializeApp(firebaseConfig);
 const app = createApp(App);
 app.use(router);
 app.use(PrimeVue);
-app.use(ConfirmationService);
 
 app.component("TfButtonView", Button);
 app.component("TfPasswordView", Password);
@@ -51,10 +46,7 @@ app.component("TfUploadView", FileUpload);
 app.component("TfInputMaskView", InputMask);
 app.component("TfToggleButtonView",ToggleButton);
 app.component("TfCardView",Card);
-app.component("DataView",DataView);
-app.component("TfDataViewLayout",DataViewLayoutOptions);
 app.component("TfRadioView",RadioButton);
-app.component("TfConfirmView",ConfirmDialog);
 
 
 app.mount("#app");

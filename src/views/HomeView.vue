@@ -1,22 +1,24 @@
 <template>
   <div>
-    <!--COMPINFO CALISMIYOR, COMPANY.COMPANYNAME ÇALIŞIYOR-->
     <h3 style="display: flex; justify-content: center">HomeView</h3>
     <div class="container" id="homeViewContainer">
       <p>Hoş geldin</p>
-      <TfSplitButtonView @click="addReceipt" :model="splitMenu" label="Fiş Ekle" icon="pi pi-plus" />
-      <list-component :slipsList="slipsList" @itemClick="handleClick"></list-component>
+      <TfSplitButtonView label="Fiş Ekle" icon="pi pi-plus" :model="splitMenu" @click="addReceipt" />
+      <list-component :slipsList="slipsList" @itemClick="handleClick">
+        <!-- Slipslist ismi değişebilir-->
+      </list-component>
     </div>
   </div>
 </template>
 
 <script>
 import {
-  getDocs,
-  getFirestore,
-  collection,
-  query,
   where,
+  query,
+  getDocs,
+  collection,
+  getFirestore,
+  orderBy,
 } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { onMounted, ref as vueRef } from "vue";
@@ -27,59 +29,85 @@ export default {
     ListComponent,
   },
   setup() {
-    const db = getFirestore();
     const auth = getAuth();
+    const db = getFirestore();
     const router = useRouter();
-    const isUser = vueRef(false);
     const myId = vueRef(null);
+    const isUser = vueRef(true);
     const adminId = vueRef(null);
     const slipsList = vueRef([]);
-    const splitMenu = [
-      {
-        label: "Sırala",
-        icon: "pi pi-sort-numeric-down-alt", //pi-sort-amount-down
-        command: () => {
-          console.log("Sıralandı");
-        },
-      },
-      {
-        label: `Ödeme Şekline Göre Filtrele`,
-        icon: "pi pi-credit-card",
-        command: () => {
-          console.log("Nakit" || "Kart");
-        },
-      },
-      {
-        label: `Kullanıcıya göre filtrele /admin`,
-        command: () => {
-          console.log("Filtrelendi");
-        },
-      },
-    ];
+    const splitMenu = vueRef([]);
+    //SplitMenu aşağıda tanımlı
+
+    const sorts = async (type) => {
+      const q = query(
+        collection(db, "infos"),
+        orderBy("uploadDate", type),
+      );
+      /// listeyi boşalttık 
+      await getDocs(q).then((querySnapshot) => {
+        querySnapshot.forEach(() => {
+          slipsList.value = [];
+        })
+      });
+      // listeyi doldur
+      await getDocs(q).then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          slipsList.value.push(doc.data());
+        })
+      });
+    };
 
     onMounted(async () => {
       const querySnapshot = await getDocs(collection(db, "admins"));
 
       querySnapshot.forEach((doc) => {
         adminId.value = doc.data().id;
-        console.log("Home: " + adminId.value);
+        // console.log("Admin id:" + adminId.value);
       });
 
       onAuthStateChanged(auth, (user) => {
         if (user) {
           myId.value = user.uid;
           if (user.uid === adminId.value) {
-            console.log("OK");
+            console.log("Admin Girişi");
             isUser.value = false;
+            console.log('isUser: ', typeof isUser.value, isUser.value);
             fetchData();
           } else {
-            console.log("Users");
+            console.log("Kullanıcı Girişi");
             isUser.value = true;
-            console.log(isUser.value);
+            console.log('isUser: ', typeof isUser.value, isUser.value);
             fetchUserData();
           }
         }
       });
+
+      splitMenu.value = [
+        {
+          label: "Sırala",
+          icon: "pi pi-sort-numeric-down-alt", //pi-sort-amount-down
+          command: () => {
+            console.log("Sıralandı");
+            sorts('asc' || 'desc');
+          },
+        },
+        {
+          label: `Ödeme Şekline Göre Filtrele`,
+          icon: "pi pi-credit-card",
+          command: () => {
+            console.log("Nakit" || "Kart");
+          },
+        },
+        {
+          label: `Kullanıcıya göre filtrele /admin`,
+          icon: "pi pi-cog",
+          command: () => {
+            console.log("Filtrelendi");
+          },
+          visible: (isUser.value == true),
+        },
+      ];
 
       const fetchData = async () => {
         const q = query(collection(db, "infos"));
@@ -104,27 +132,18 @@ export default {
     };
 
     const handleClick = (myId) => {
-      // const list = ref([]);
-      // const a = slipsList.value.find((newVal) => {
-      //    bu kod router için         query: { list: JSON.stringify(list.value) },
-      //   return newVal.slipsId === myId;
-      // });
-      // console.log("A", a);
-      // list.value.unshift(a.value);
       router.push({
         name: "ReceiptDetailView",
         params: { id: myId },
       });
-      // console.log("Emit", myId);
     };
 
     return {
-      slipsList,
-      isUser,
-      addReceipt,
-      splitMenu,
       handleClick,
-      
+      addReceipt,
+      slipsList,
+      splitMenu,
+      isUser,
     };
   },
 };
@@ -148,6 +167,4 @@ h3 {
   display: flex;
   justify-content: center;
 }
-
-
 </style>

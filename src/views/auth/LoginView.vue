@@ -4,18 +4,18 @@
     <form @submit.prevent="handleLogin">
       <label>E-Mail Adres</label>
       <TfInputView
-        class="emailInput"
-        type="email"
         required
+        type="email"
+        class="emailInput"
         v-model="enteredMail"
         placeholder="Email gir"
       />
       <label>Parola</label>
       <TfPasswordView
-        class="passwordDiv"
-        type="password"
-        :feedback="false"
         required
+        :feedback="false"
+        type="password"
+        class="passwordDiv"
         v-model="enteredPassword"
         placeholder="Parola gir"
       />
@@ -30,11 +30,11 @@ import { useRouter } from "vue-router";
 
 export default {
   setup() {
-    const enteredMail = ref(null);
-    const enteredPassword = ref(null);
     const auth = getAuth();
     const router = useRouter();
     const error = ref(null);
+    const enteredMail = ref(null);
+    const enteredPassword = ref(null);
 
     const handleLogin = async () => {
       signInWithEmailAndPassword(auth, enteredMail.value, enteredPassword.value)
@@ -66,7 +66,7 @@ form {
   flex-wrap: wrap;
 }
 
-form>label {
+form > label {
   display: flex;
   justify-content: center;
 }

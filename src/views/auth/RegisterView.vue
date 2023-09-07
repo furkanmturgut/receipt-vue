@@ -3,19 +3,45 @@
     <h3 style="display: flex; justify-content: center">Üye Ol</h3>
     <form @submit.prevent="handleRegister">
       <label>E-Mail Adres</label>
-      <TfInputView type="email" required v-model="enteredMail" placeholder="E-mail Adresi Giriniz" />
+      <TfInputView
+        required
+        type="email"
+        v-model="enteredMail"
+        placeholder="E-mail Adresi Giriniz"
+      />
 
       <label>Parola</label>
-      <TfPasswordView type="password" required v-model="enteredPass" placeholder="Parola Belirleyin" />
+      <TfPasswordView
+        required
+        type="password"
+        v-model="enteredPass"
+        placeholder="Parola Belirleyin"
+      />
 
       <label>Firma Adı</label>
-      <TfInputView type="text" required v-model="enteredCompanyName" placeholder="Turkuvaz İnovasyon A.Ş." />
+      <TfInputView
+        required
+        type="text"
+        v-model="enteredCompanyName"
+        placeholder="Turkuvaz İnovasyon A.Ş."
+      />
 
       <label>Firma İletişim (+90)</label>
-      <TfInputView type="number" required v-model="enteredCompanyPhone" placeholder="5XX XXX XXXX" />
+      <TfInputView
+        required
+        type="number"
+        v-model="enteredCompanyPhone"
+        placeholder="5XX XXX XXXX"
+      />
 
       <label>Firma Adres</label>
-      <TfTextAreaView type="text" required rows="4" v-model="enteredCompanyAddress" placeholder="Adres Giriniz" />
+      <TfTextAreaView
+        required
+        rows="4"
+        type="text"
+        v-model="enteredCompanyAddress"
+        placeholder="Adres Giriniz"
+      />
       <TfButtonView type="submit" label="Kayıt Ol" />
     </form>
   </div>
@@ -23,34 +49,32 @@
 
 <script>
 import { ref } from "vue";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { getFirestore, addDoc, collection } from "firebase/firestore";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 export default {
   setup() {
+    const auth = getAuth();
+    const db = getFirestore();
+    const router = useRouter();
     const enteredMail = ref(null);
     const enteredPass = ref(null);
-    console.log(enteredPass);
     const enteredCompanyName = ref(null);
     const enteredCompanyAddress = ref(null);
     const enteredCompanyPhone = ref(null);
-    const router = useRouter();
-    const auth = getAuth();
-    const db = getFirestore();
     const error = ref(null);
 
     const handleRegister = () => {
-      console.log("okoko")
+      console.log("Kayıt başarılı");
       createUserWithEmailAndPassword(auth, enteredMail.value, enteredPass.value)
         .then(() => {
-          // create user is sucessfull
           try {
             const docRef = addDoc(collection(db, "companyInfo"), {
-              companyName: enteredCompanyName.value,
-              companyAddress: enteredCompanyAddress.value,
-              companyPhone: enteredCompanyPhone.value,
-              companyMail: enteredMail.value,
               id: auth.currentUser.uid,
+              companyName: enteredCompanyName.value,
+              companyMail: enteredMail.value,
+              companyPhone: enteredCompanyPhone.value,
+              companyAddress: enteredCompanyAddress.value,
             });
             console.log("Document written with ID: ", docRef.id);
           } catch (e) {
@@ -58,9 +82,6 @@ export default {
               error.value = "Verileri kontrol ediniz";
             }
           }
-          // register user's
-          // enteredMail.value = "";
-          // enteredPass.value = "";
           router.push({ name: "LoginView" });
         })
         .catch((err) => {
@@ -71,6 +92,7 @@ export default {
     };
     return {
       handleRegister,
+      //
       enteredMail,
       enteredPass,
       enteredCompanyAddress,
@@ -102,7 +124,7 @@ form {
   justify-content: center;
 }
 
-form>label {
+form > label {
   display: flex;
   justify-content: center;
 }
