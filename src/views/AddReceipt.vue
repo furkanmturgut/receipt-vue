@@ -248,7 +248,7 @@ export default {
           const querySnapshot1 = await getDocs(cN);
           querySnapshot1.forEach((doc) => {
             newArrayList.value.push(doc.data());
-            console.log(newArrayList)
+            //console.log(newArrayList)
 
           });
 

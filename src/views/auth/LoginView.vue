@@ -31,8 +31,8 @@ import { useRouter } from "vue-router";
 export default {
   setup() {
     const auth = getAuth();
-    const router = useRouter();
     const error = ref(null);
+    const router = useRouter();
     const enteredMail = ref(null);
     const enteredPassword = ref(null);
 
@@ -50,7 +50,6 @@ export default {
           }
         });
     };
-
     return { enteredMail, enteredPassword, handleLogin };
   },
 };

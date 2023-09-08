@@ -1,7 +1,9 @@
 <template>
   <TfCardView v-for="receipt in slipsList" :key="receipt.id">
     <template #title>Fiş Tarihi: {{ receipt.receiptDate }}</template>
-    <template #subtitle> Ödeme Tutarı: {{ receipt.paymentMethod }} </template>
+    <template #subtitle> Ödeme Yöntemi: {{ receipt.paymentMethod }} </template>
+    <template #content> Ödeme Tutarı: {{ receipt.price }} TL </template>
+
     <!-- <template #content> Ödeme Tutarı: {{ receipt.price }}TL </template> -->
     <template #footer>
       <div
@@ -35,10 +37,6 @@ export default {
     Ayrıca, receipt'ı v-for döngüsünün içinde tanımladığınız için, setup içinde bu değişkeni kullanabilmek için
     önce ref veya reactive gibi reaktif bir değişken olarak tanımlamanız gerekebilir.
     */
-    // const yearSlice = dateInput.value.slice(0, 4);
-    // const monthSlice = dateInput.value.slice(5, 7);
-    // const daySlice = dateInput.value.slice(8, 10);
-    // const dateConvert = daySlice + "." + monthSlice + "." + yearSlice;
     const handleClick = (slipsId) => {
       id.value = slipsId;
       emit("itemClick", id.value);

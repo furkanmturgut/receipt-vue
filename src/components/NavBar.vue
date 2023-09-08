@@ -1,6 +1,7 @@
 <template>
   <div class="navbar">
     <nav>
+      <img src="@/assets/maviLogo.jpeg" @click="homeTo('/')" alt="Turkuvaz Logo" class="logo" />
       <TfButtonView @click="handleLogout" class="button" v-if="user" label="Çıkış" />
       <TfButtonView v-else-if="!user" @click="homeTo('register')" label="Üye ol" />
       <TfButtonView v-if="!user" @click="homeTo('login')" label="Giriş yap" />
@@ -46,7 +47,7 @@ export default {
 <style scoped>
 .navbar {
   padding: 16px 10px;
-  background: #a1f3ee;
+  background: linear-gradient(to bottom, #a1f3ee, #61bdf3);
 }
 button.p-button.p-component.p-splitbutton-defaultbutton 
 {
@@ -60,4 +61,11 @@ nav {
   max-width: 1200px;
   margin: 0 auto;
 }
+.logo {
+  width: 160px; /* Genişlik ayarını değiştirebilirsiniz */
+  height: auto; /* Yükseklik otomatik olarak ayarlanır */
+  margin-right: 20px; /* Logo ile butonlar arasına bir boşluk ekler */
+  cursor: pointer;
+}
+
 </style>

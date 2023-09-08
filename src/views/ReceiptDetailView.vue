@@ -1,9 +1,7 @@
 <template>
   <div>
-    <detail-component
-      :detailList="detailList"
-      @deleteClick="deleteItem"
-    ></detail-component>
+    <detail-component :detailList="detailList" @deleteClick="deleteItem" @updateClick="updateItem"
+      @paymentEmit="handleChildPrice" @dateEmit="handleChildDate"></detail-component>
   </div>
 </template>
 
@@ -13,6 +11,7 @@ import {
   doc,
   query,
   where,
+  updateDoc,
   getDocs,
   deleteDoc,
   collection,
@@ -28,6 +27,8 @@ export default {
     const route = useRoute();
     const params = route.params;
     const router = useRouter();
+    const upDate = ref(null);
+    const upPayment = ref(null);
     const db = getFirestore();
     const detailList = ref([]);
     console.log("paramsid: ", params.id);
@@ -48,6 +49,32 @@ export default {
       }
     });
 
+    const updateItem = async (myID) => {
+      const dB = getFirestore()
+      //console.log("Update")
+      const q = query(collection(dB, "infos"), where("slipsId", "==", myID));
+
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.size > 0) {
+        const docum = querySnapshot.docs[0];
+        const firstUpdate = {
+          paymentMethod: upPayment.value,
+          receiptDate: upDate.value
+        }
+        await updateDoc(docum.ref, firstUpdate)
+      }
+    }
+
+    const handleChildPrice = (newPrice) => {
+      upPayment.value = newPrice.value
+      console.log("Yeni Price:", newPrice.value);
+    };
+
+    const handleChildDate = (newDate) => {
+      upDate.value = newDate.value;
+      console.log("Yeni Tarih:", newDate.value);
+    }
+
     const deleteItem = (myID) => {
       const q = query(collection(db, "infos"), where("slipsId", "==", myID));
       getDocs(q).then((querySnapshot) => {
@@ -59,8 +86,8 @@ export default {
         });
       });
     };
-    
-    return { detailList, deleteItem };
+
+    return { detailList, deleteItem, updateItem, handleChildPrice,handleChildDate };
   },
 };
 </script>
