@@ -1,7 +1,14 @@
 <template>
   <div>
-    <detail-component :detailList="detailList" @deleteClick="deleteItem" @updateClick="updateItem"
-      @paymentEmit="handleChildPrice" @dateEmit="handleChildDate"></detail-component>
+    <detail-component
+      :detailList="detailList"
+      @deleteClick="deleteItem"
+      @updateClick="updateItem"
+      @paymentEmit="handleChildPayMethod"
+      @dateEmit="handleChildDate"
+      @priceEmit="handleChildPrice"
+    >
+    </detail-component>
   </div>
 </template>
 
@@ -24,14 +31,14 @@ export default {
     DetailComponent,
   },
   setup() {
+    const db = getFirestore();
     const route = useRoute();
     const params = route.params;
     const router = useRouter();
-    const upDate = ref(null);
-    const upPayment = ref(null);
-    const db = getFirestore();
     const detailList = ref([]);
-    console.log("paramsid: ", params.id);
+    const upDate = ref(null);
+    const updatePayMethod = ref(null);
+    const updatePrice = ref(null);
 
     onMounted(async () => {
       try {
@@ -45,35 +52,40 @@ export default {
           detailList.value.push(doc.data());
         });
       } catch (error) {
-        console.log(error);
+        console.error("infos database error:", error);
       }
     });
 
     const updateItem = async (myID) => {
-      const dB = getFirestore()
-      //console.log("Update")
+      const dB = getFirestore();
       const q = query(collection(dB, "infos"), where("slipsId", "==", myID));
 
       const querySnapshot = await getDocs(q);
       if (querySnapshot.size > 0) {
         const docum = querySnapshot.docs[0];
         const firstUpdate = {
-          paymentMethod: upPayment.value,
-          receiptDate: upDate.value
-        }
-        await updateDoc(docum.ref, firstUpdate)
+          paymentMethod: updatePayMethod.value,
+          receiptDate: upDate.value,
+          price: updatePrice.value,
+        };
+        await updateDoc(docum.ref, firstUpdate);
       }
-    }
+    };
+
+    const handleChildPayMethod = (newMethod) => {
+      updatePayMethod.value = newMethod.value;
+      console.log("Yeni ödeme şekli:", newMethod.value);
+    };
 
     const handleChildPrice = (newPrice) => {
-      upPayment.value = newPrice.value
-      console.log("Yeni Price:", newPrice.value);
+      updatePrice.value = newPrice.value;
+      console.log("Yeni fiyat:", newPrice.value);
     };
 
     const handleChildDate = (newDate) => {
       upDate.value = newDate.value;
       console.log("Yeni Tarih:", newDate.value);
-    }
+    };
 
     const deleteItem = (myID) => {
       const q = query(collection(db, "infos"), where("slipsId", "==", myID));
@@ -87,7 +99,14 @@ export default {
       });
     };
 
-    return { detailList, deleteItem, updateItem, handleChildPrice,handleChildDate };
+    return {
+      detailList,
+      deleteItem,
+      updateItem,
+      handleChildPrice,
+      handleChildPayMethod,
+      handleChildDate,
+    };
   },
 };
 </script>

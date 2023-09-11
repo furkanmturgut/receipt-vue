@@ -5,12 +5,12 @@
         <div class="col-6">
           <!-- w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto  -->
           <img
-            class="w:9 sm:w-20rem shadow-2 block xl:block mx-auto my-3 border-round"
+            class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round"
             :src="`${item.bilUrl}`"
             :alt="item.id"
           />
           <img
-            class="w:9 sm:w-20rem shadow-2 block xl:block mx-auto my-3 border-round"
+            class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round"
             :src="`${item.slipsUrl}`"
             :alt="item.id"
           />
@@ -22,23 +22,58 @@
             <div
               class="flex flex-column align-items-center sm:align-items-start gap-3"
             >
-              <div class="text-2xl font-bold text-900">
-                <i class="pi pi-calendar"></i>
-                <TfInputView
-                  :value="!isUpdate ? item.receiptDate : dates"
-                  v-model="dates"
-                  @input="emitDate"
-                  :disabled="!isUpdate"
-                />
+              <div class="flex align-items-center gap-3">
+                <span class="flex align-items-center gap-2">
+                  <i class="pi pi-dollar"></i>
+                  <span class="font-semibold" style="max-width: 140px">
+                    <TfInputView
+                      :value="!isUpdate ? item.price : itemPrices"
+                      v-model="itemPrices"
+                      @input="emitPrice"
+                      :disabled="!isUpdate"
+                    />
+                  </span>
+                </span>
               </div>
+
               <div class="flex align-items-center gap-3">
                 <span class="flex align-items-center gap-2">
                   <i class="pi pi-wallet"></i>
+                  <span class="font-semibold" style="max-width: 140px">
+                    <TfInputView
+                      :value="!isUpdate ? item.paymentMethod : payMethods"
+                      :disabled="1"
+                    />
+                  </span>
+                </span>
+                <div class="p-field-radiobutton">
+                  <TfRadioView
+                    name="paymentOption"
+                    value="nakit"
+                    label="Nakit"
+                    v-model="payMethods"
+                    @click="emitPayMetod('nakit')"
+                    :disabled="!isUpdate"
+                  />
+                  <TfRadioView
+                    name="paymentOption"
+                    value="kart"
+                    label="Kart"
+                    v-model="payMethods"
+                    @click="emitPayMetod('kart')"
+                    :disabled="!isUpdate"
+                  />
+                </div>
+              </div>
+
+              <div class="flex align-items-center gap-3">
+                <span class="flex align-items-center gap-2">
+                  <i class="pi pi-calendar"></i>
                   <span class="font-semibold">
                     <TfInputView
-                      :value="!isUpdate ? item.paymentMethod : payments"
-                      v-model="payments"
-                      @input="emitPayment"
+                      :value="!isUpdate ? item.receiptDate : dates"
+                      v-model="dates"
+                      @input="emitDate"
                       :disabled="!isUpdate"
                     />
                   </span>
@@ -48,7 +83,6 @@
             <div
               class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2"
             >
-              <span class="text-2xl font-semibold"> ${{ item.price }}</span>
               <TfButtonView
                 icon="pi pi-file-edit"
                 severity="warning"
@@ -88,15 +122,16 @@ import { getFirestore, getDocs, collection } from "firebase/firestore";
 
 export default {
   props: ["detailList"],
-  emits: ["deleteClick", "updateClick", "paymentEmit", "dateEmit"],
+  emits: ["deleteClick", "updateClick", "paymentEmit", "dateEmit", "priceEmit"],
 
   setup(props, { emit }) {
-    const id = ref(null);
     const db = getFirestore();
+    const id = ref(null);
     const adminId = ref(null);
     const userId = ref(null);
     const isUpdate = ref(false);
-    const payments = ref("");
+    const payMethods = ref("");
+    const itemPrices = ref("");
     const dates = ref("");
 
     // data
@@ -112,24 +147,26 @@ export default {
     });
 
     const updateClick = (item) => {
-      payments.value = item.paymentMethod;
+      payMethods.value = item.paymentMethod;
       dates.value = item.receiptDate;
       userId.value = item.id;
       isUpdate.value = !isUpdate.value;
-      emitPayment();
+      emitPayMetod(payMethods.value);
       emitDate();
+      emitPrice();
     };
 
-    const emitPayment = () => {
-      // data = item.paymentMethod
-      console.log("paymentEmit", payments);
-      emit("paymentEmit", payments);
+    const emitPayMetod = (selectedPayment) => {
+      payMethods.value = selectedPayment;
+      emit("paymentEmit", payMethods);
     };
 
     const emitDate = () => {
-      console.log("datesPayment", dates);
-
       emit("dateEmit", dates);
+    };
+    
+    const emitPrice = () => {
+      emit("priceEmit", itemPrices);
     };
 
     const saveItem = (slipsId) => {
@@ -144,10 +181,12 @@ export default {
       updateClick,
       isUpdate,
       saveItem,
-      emitPayment,
-      payments,
-      emitDate,
+      payMethods,
+      itemPrices,
       dates,
+      emitPayMetod,
+      emitPrice,
+      emitDate,
     };
   },
 };
