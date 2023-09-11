@@ -4,77 +4,129 @@
     <form @submit.prevent="submitData">
       <div id="fatura">
         <h1 style="text-align: center">Fatura</h1>
-        <video ref="videoElement1" class="videoCam" style="display: none" id="video1" autoplay></video>
-        <TfButtonView v-if="!isCameraOn1 || isPhotoTaken1" class="openCamera1" @click="requestCameraAccess1" style="
+        <video
+          ref="videoElement1"
+          class="videoCam"
+          style="display: none"
+          id="video1"
+          autoplay
+        ></video>
+        <TfButtonView
+          v-if="!isCameraOn1 || isPhotoTaken1"
+          class="openCamera1"
+          @click="requestCameraAccess1"
+          style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          ">Kamerayı aç</TfButtonView>
-        <TfButtonView v-else @click="takePhoto1" style="
+          "
+          >Kamerayı aç</TfButtonView
+        >
+        <TfButtonView
+          v-else
+          @click="takePhoto1"
+          style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
           ">📸</TfButtonView>
-        <!-- Kamera seç  -->
-        <TfDropdownView v-if="!(!isCameraOn1 || isPhotoTaken1)" v-model="currentCamera" :options="availableCameras"
-          optionValue="deviceId" optionLabel="label" @change="requestCameraAccess1"></TfDropdownView>
         <canvas ref="canvasElement1" style="display: none"></canvas>
-        <img v-if="isPhotoTaken1" :src="photoScreen1" id="video" alt="Çekilen Fotoğraf" class="videoCam" />
+        <img
+          v-if="isPhotoTaken1"
+          :src="photoScreen1"
+          id="video"
+          alt="Çekilen Fotoğraf"
+          class="videoCam"
+        />
       </div>
       <!-- FATURA/SLİP -->
       <!-- FATURA/SLİP -->
       <!-- FATURA/SLİP -->
       <div class="slip">
         <h1 style="text-align: center">Slip</h1>
-        <video class="videoCam" id="video2" ref="videoElement2" style="display: none" autoplay />
-        <TfButtonView v-if="!isCameraOn2 || isPhotoTaken2" class="openCamera2" @click="requestCameraAccess2" style="
+        <video
+          class="videoCam"
+          id="video2"
+          ref="videoElement2"
+          style="display: none"
+          autoplay
+        />
+        <TfButtonView
+          v-if="!isCameraOn2 || isPhotoTaken2"
+          class="openCamera2"
+          @click="requestCameraAccess2"
+          style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          ">Kamerayı aç</TfButtonView>
-        <TfButtonView v-else @click="takePhoto2" style="
+          "
+          >Kamerayı aç</TfButtonView
+        >
+        <TfButtonView
+          v-else
+          @click="takePhoto2"
+          style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          ">📸</TfButtonView>
+          "
+          >📸</TfButtonView
+        >
         <canvas ref="canvasElement2" style="display: none"></canvas>
-        <img v-if="isPhotoTaken2" :src="photoScreen2" class="videoCam" id="video" alt="Çekilen Fotoğraf" />
+        <img
+          v-if="isPhotoTaken2"
+          :src="photoScreen2"
+          class="videoCam"
+          id="video"
+          alt="Çekilen Fotoğraf"
+        />
       </div>
       <!-- SLİP/TARİH -->
       <!-- SLİP/TARİH -->
       <!-- SLİP/TARİH -->
       <h1 style="text-align: center">Fatura Tarihi</h1>
-
-      <TfInputView type="date" v-model="dateInput" min="2023-01-01" max="2023-12-31" style="width: auto; height: 2rem" />
+      <TfInputView :class="{ 'p-invalid': !dateInput }" type="date" v-model="dateInput"
+        style="width: auto; height: 2rem" />
       <!-- TARİH/TUTAR -->
       <!-- TARİH/TUTAR -->
       <!-- TARİH/TUTAR -->
       <h1 style="text-align: center">Tutar</h1>
 
-      <TfInputNumber v-model="paymentPrice" mode="currency" currency="TRY" locale="tr-TR"
-        style="width: auto; height: 2rem" placeholder="Ödeme Tutarı (TL)" />
+      <TfInputView :class="{ 'p-invalid': !paymentPrice }" type="number" style="width: auto; height: 2rem"
+        v-model="paymentPrice" placeholder="Ödeme Tutarı (TL)" />
 
       <!-- TUTAR/ÖDEME ŞEKLİ -->
       <!-- TUTAR/ÖDEME ŞEKLİ -->
       <h1 style="text-align: center">Ödeme Şekli</h1>
-      <div style="flex-wrap: wrap; justify-content: center; column-gap: 25px" class="flex">
+      <div
+        style="flex-wrap: wrap; justify-content: center; column-gap: 25px"
+        class="flex"
+      >
         <div class="flex align-items-center">
           <TfRadioView v-model="paymentMethod" name="kart" value="kart" />
-          <label for="kart" style="font-size: 1.5rem; font-weight: bold" class="ml-2">Kart</label>
+          <label
+            for="kart"
+            style="font-size: 1.5rem; font-weight: bold"
+            class="ml-2"
+            >Kart</label
+          >
         </div>
         <div class="flex align-items-center">
           <TfRadioView v-model="paymentMethod" name="nakit" value="nakit" />
-          <label for="nakit" style="font-size: 1.5rem; font-weight: bold" class="ml-2">Nakit</label>
+          <label
+            for="nakit"
+            style="font-size: 1.5rem; font-weight: bold"
+            class="ml-2"
+            >Nakit</label
+          >
         </div>
       </div>
       <!-- OdemeSekli//Kaydet Buton -->
       <TfButtonView style="text-transform: uppercase; font-size: large" type="submit" label="Kaydet" />
-      <TfInlineMessage v-if="e">{{ error }}</TfInlineMessage>
-
     </form>
   </div>
 </template>
@@ -102,6 +154,7 @@ export default {
   setup() {
     const auth = getAuth();
     const db = getFirestore();
+    const router = useRouter();
     const storage = getStorage();
     const videoElement1 = ref(null);
     const videoElement2 = ref(null);
@@ -118,36 +171,22 @@ export default {
     const isPhotoTaken1 = ref(false);
     const isPhotoTaken2 = ref(false);
     const paymentMethod = ref(null);
-    const currentCamera = ref(null);
     const router = useRouter();
     let cameraStream1 = null;
     let cameraStream2 = null;
     const availableCameras = ref([]);
     const newArrayList = ref([]);
-    const dateRegex = /^\d{4}\-\d{2}\-\d{2}$/;
-    const e = ref(false);
-    const error = ref(null);
 
-    onMounted(async () => {
-      availableCameras.value = await getAvailableCameras();
-      console.log(availableCameras.value[0].deviceId);
-      currentCamera.value = availableCameras.value[0].deviceId;
-    })
 
-    const getAvailableCameras = async () => {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const cameraList = devices.filter((d) => d.kind == "videoinput");
-      console.log("cameraList:", typeof cameraList, cameraList);
-      return cameraList;
-    };
 
     const requestCameraAccess1 = async () => {
       try {
         isPhotoTaken1.value = false;
         getAvailableCameras();
         cameraStream1 = await navigator.mediaDevices.getUserMedia({
-          video: { deviceId: currentCamera.value }, //Buraya selectedDevice gelecek
+          video: true,
         });
+        console.log("currentCamera:", currentCamera.value, "stream", cameraStream1);
         videoElement1.value.srcObject = cameraStream1;
         videoElement1.value.style.display = "block";
         videoElement1.value.play();
@@ -246,37 +285,36 @@ export default {
       }
     };
     const submitData = async () => {
-      // if (
-      //   photoPng1.value &&
-      //   photoPng2.value &&
-      //   dateInput.value &&
-      //   paymentPrice.value &&
-      //   paymentMethod.value
+      if (
+        photoPng1.value &&
+        photoPng2.value &&
+        dateInput.value &&
+        paymentPrice.value &&
+        paymentMethod.value
 
-      // ) {
-      if (photoPng1.value && photoPng2.value) {
-        if (dateRegex.test(dateInput.value)) {
-          const payment = paymentPrice.value;
-          if (!(payment / 10**11)) {
-            try {
-              const id = Date.now();
-              const storageRef = FBref(storage, `infos/${id}`);
-              const storageRef2 = FBref(storage, `receipt/${id}`);
-              const fileSnapshot1 = await uploadBytes(storageRef, photoPng1.value);
-              const fileSnapshot2 = await uploadBytes(storageRef2, photoPng2.value);
-              const downloadURL1 = await getDownloadURL(fileSnapshot1.ref);
-              const downloadURL2 = await getDownloadURL(fileSnapshot2.ref);
-              const random = Math.floor(Math.random() * 100000);
-              stopCamera1();
-              stopCamera2();
+      ) {
+        try {
+          const id = Date.now();
+          const storageRef = FBref(storage, `infos/${id}`);
+          const storageRef2 = FBref(storage, `receipt/${id}`);
+          const fileSnapshot1 = await uploadBytes(storageRef, photoPng1.value);
+          const fileSnapshot2 = await uploadBytes(storageRef2, photoPng2.value);
+          const downloadURL1 = await getDownloadURL(fileSnapshot1.ref);
+          const downloadURL2 = await getDownloadURL(fileSnapshot2.ref);
+          const random = Math.floor(Math.random() * 100000);
+          stopCamera1();
+          stopCamera2();
 
-              const cN = query(collection(db, "companyInfo"), where("id", "==", auth.currentUser.uid));
-              const querySnapshot1 = await getDocs(cN);
-              querySnapshot1.forEach((doc) => {
-                newArrayList.value.push(doc.data());
-                //console.log(newArrayList)
+          const cN = query(collection(db, "companyInfo"), where("id", "==", auth.currentUser.uid));
+          const querySnapshot1 = await getDocs(cN);
+          querySnapshot1.forEach((doc) => {
+            newArrayList.value.push(doc.data());
+            //console.log(newArrayList)
 
-              });
+          });
+
+
+
 
               addDoc(collection(db, "infos"), {
                 id: auth.currentUser.uid,
@@ -333,6 +371,8 @@ export default {
       currentCamera,
       dateInput,
       paymentMethod,
+      availableCameras,
+      currentCamera,
       paymentPrice,
       //
       isCameraOn1,
