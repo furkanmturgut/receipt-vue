@@ -39,7 +39,9 @@
           v-if="!(!isCameraOn1 || isPhotoTaken1)"
           v-model="currentCamera"
           :options="availableCameras"
+          optionValue="deviceId"
           optionLabel="label"
+          @change="requestCameraAccess1"
         ></TfDropdownView>
         <canvas ref="canvasElement1" style="display: none"></canvas>
         <img
@@ -170,7 +172,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 export default {
   setup() {
@@ -199,20 +201,26 @@ export default {
     const availableCameras = ref([]);
     const newArrayList = ref([]);
 
+    onMounted( async () => {
+      availableCameras.value =await getAvailableCameras();
+      console.log(availableCameras.value[0].deviceId);
+      currentCamera.value = availableCameras.value[0].deviceId;
+    })
+
     const getAvailableCameras = async () => {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const cameraList = devices.filter((d) => d.kind == "videoinput");
-      availableCameras.value = cameraList;
-      console.log("devicelist:",typeof(cameraList), cameraList);
+      console.log("cameraList:", typeof cameraList, cameraList);
+      return cameraList;
     };
 
     const requestCameraAccess1 = async () => {
       try {
         isPhotoTaken1.value = false;
-        getAvailableCameras();
         cameraStream1 = await navigator.mediaDevices.getUserMedia({
-          video: { deviceId: currentCamera }, //Buraya selectedDevice gelecek
+          video: { deviceId: currentCamera.value },
         });
+        console.log("currentCamera:", currentCamera.value, "stream", cameraStream1);
         videoElement1.value.srcObject = cameraStream1;
         videoElement1.value.style.display = "block";
         videoElement1.value.play();
