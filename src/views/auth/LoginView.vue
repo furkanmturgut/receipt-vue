@@ -3,26 +3,15 @@
     <h3 style="display: flex; justify-content: center">Giriş Yap</h3>
     <form @submit.prevent="handleLogin">
       <label>E-Mail Adres</label>
-      <TfInputView
-        required
-        type="email"
-        class="emailInput"
-        v-model="enteredMail"
-        placeholder="Email gir"
-      />
+      <TfInputView required v-model="enteredMail" placeholder="Email gir" @focus="clearError" />
+
       <label>Parola</label>
-      <TfPasswordView
-        required
-        :feedback="false"
-        type="password"
-        class="passwordDiv"
-        v-model="enteredPassword"
-        placeholder="Parola gir"
-      />
+      <TfPasswordView required :feedback="false" type="password" class="passwordDiv" @focus="clearError" v-model="enteredPassword"
+        placeholder="Parola gir" toggleMask />
+
       <TfButtonView type="submit" label="Giriş Yap" />
-      <div v-if="e">
-        <p>Kullanıcı adı veya parola hatalı</p>
-      </div>
+      <TfInlineMessage v-if="e">{{ error }}</TfInlineMessage>
+
     </form>
   </div>
 </template>
@@ -39,24 +28,46 @@ export default {
     const router = useRouter();
     const enteredMail = ref(null);
     const enteredPassword = ref(null);
+    const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+
+    const clearError = () => {
+
+      e.value = false
+    }
+
 
     const handleLogin = async () => {
-      signInWithEmailAndPassword(auth, enteredMail.value, enteredPassword.value)
-        .then(() => {
-          enteredMail.value = "";
-          enteredPassword.value = "";
-          e.value = false
-          // console.log('OK')
-          router.push({ name: "HomeView" });
-        })
-        .catch((err) => {
-          if (err.message) {
-            e.value = true
-            error.value = "Kullanıcı adı veya parola hatalı!";
-          }
-        });
+      if (emailRegex.test(enteredMail.value)) {
+        e.value = false
+        signInWithEmailAndPassword(auth, enteredMail.value, enteredPassword.value)
+          .then(() => {
+            enteredMail.value = "";
+            enteredPassword.value = "";
+            e.value = false;
+            router.push({ name: "HomeView" });
+          })
+          .catch((err) => {
+            if (err.message) {
+              e.value = true;
+              const passError = "Firebase: Error (auth/wrong-password).";
+              if (passError == err.message) {
+                error.value = "Parola hatalı";
+              } else
+                error.value = "Kullanıcı bulunamadı";
+            }
+          });
+      } else {
+        e.value = true;
+        error.value = "Geçerli bir email adresi girin."
+      }
+
+
+
+
+
+
     };
-    return { enteredMail, enteredPassword, handleLogin ,e};
+    return { enteredMail, enteredPassword, handleLogin, e, clearError, error };
   },
 };
 </script>
@@ -71,10 +82,11 @@ form {
   flex-wrap: wrap;
 }
 
-form > label {
+form>label {
   display: flex;
   justify-content: center;
 }
+
 .container {
   background-color: #64ccc5;
   min-height: 500px;
@@ -84,11 +96,13 @@ h3 {
   display: flex;
   justify-content: center;
 }
+
 .p-password {
   display: flex;
   justify-content: center;
 }
-.p-password > input {
+
+.p-password>input {
   min-width: 300px;
 }
 </style>

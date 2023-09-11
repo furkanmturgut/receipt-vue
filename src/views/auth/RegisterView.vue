@@ -3,46 +3,26 @@
     <h3 style="display: flex; justify-content: center">Üye Ol</h3>
     <form @submit.prevent="handleRegister">
       <label>E-Mail Adres</label>
-      <TfInputView
-        required
-        type="email"
-        v-model="enteredMail"
-        placeholder="E-mail Adresi Giriniz"
-      />
+      <TfInputView v-model="enteredMail" placeholder="E-mail Adresi Giriniz" @focus="clearInput" />
 
       <label>Parola</label>
-      <TfPasswordView
-        required
-        type="password"
-        v-model="enteredPass"
-        placeholder="Parola Belirleyin"
-      />
+      <TfPasswordView type="password" v-model="enteredPass" placeholder="Parola Belirleyin" toggleMask
+        @focus="clearInput" />
 
       <label>Firma Adı</label>
-      <TfInputView
-        required
-        type="text"
-        v-model="enteredCompanyName"
-        placeholder="Turkuvaz İnovasyon A.Ş."
-      />
+      <TfInputView type="text" v-model="enteredCompanyName" placeholder="Turkuvaz İnovasyon A.Ş." @focus="clearInput" />
 
       <label>Firma İletişim (+90)</label>
-      <TfInputView
-        required
-        type="number"
-        v-model="enteredCompanyPhone"
-        placeholder="5XX XXX XXXX"
-      />
+      <TfInputMaskView v-model="enteredCompanyPhone" date="phone" mask="(999) 999-9999" placeholder="5XX XXX XXXX"
+        @focus="clearInput" />
 
       <label>Firma Adres</label>
-      <TfTextAreaView
-        required
-        rows="4"
-        type="text"
-        v-model="enteredCompanyAddress"
-        placeholder="Adres Giriniz"
-      />
+      <TfTextAreaView rows="4" type="text" v-model="enteredCompanyAddress" placeholder="Adres Giriniz"
+        @focus="clearInput" />
       <TfButtonView type="submit" label="Kayıt Ol" />
+
+      <TfInlineMessage v-if="e">{{ error }}</TfInlineMessage>
+
     </form>
   </div>
 </template>
@@ -63,32 +43,70 @@ export default {
     const enteredCompanyAddress = ref(null);
     const enteredCompanyPhone = ref(null);
     const error = ref(null);
+    const e = ref(false)
+    const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+
+    const clearInput = () => {
+      e.value = false
+    }
 
     const handleRegister = () => {
-      console.log("Kayıt başarılı");
-      createUserWithEmailAndPassword(auth, enteredMail.value, enteredPass.value)
-        .then(() => {
-          try {
-            const docRef = addDoc(collection(db, "companyInfo"), {
-              id: auth.currentUser.uid,
-              companyName: enteredCompanyName.value,
-              companyMail: enteredMail.value,
-              companyPhone: enteredCompanyPhone.value,
-              companyAddress: enteredCompanyAddress.value,
-            });
-            console.log("Document written with ID: ", docRef.id);
-          } catch (e) {
-            if (e.message) {
-              error.value = "Verileri kontrol ediniz";
+      //console.log("Kayıt başarılı");
+      if (emailRegex.test(enteredMail.value)) {
+        if (enteredPass.value.length > 6) {
+          if (enteredCompanyName.value.length > 4) {
+            if (enteredCompanyPhone.value.length > 9) {
+              if (enteredCompanyAddress.value.length > 20) {
+                createUserWithEmailAndPassword(auth, enteredMail.value, enteredPass.value)
+                  .then(() => {
+                    try {
+                      addDoc(collection(db, "companyInfo"), {
+                        id: auth.currentUser.uid,
+                        companyName: enteredCompanyName.value,
+                        companyMail: enteredMail.value,
+                        companyPhone: enteredCompanyPhone.value,
+                        companyAddress: enteredCompanyAddress.value,
+                      });
+                      // console.log("Document written with ID: ", docRef.id);
+                    } catch (err) {
+                      if (err.message) {
+                        e.value = true
+                        error.value = "Verileri kontrol ediniz";
+                      }
+                    }
+                    router.push({ name: "LoginView" });
+                  })
+                  .catch((err) => {
+                    if (err.message) {
+                      e.value = true
+                      error.value = "Lütfen tüm alanları doldurunuz";
+                    }
+                  });
+
+              } else {
+                e.value = true;
+                error.value = "Adresi açıklayıcı tanımlak için en az 20 karakter giriniz"
+              }
+            } else {
+              e.value = true;
+              error.value = "Geçerli bir telefon numarası giriniz"
             }
+
+          } else {
+            e.value = true;
+            error.value = "Şirket adını en az 5 karakter olacak şekikde giriniz"
           }
-          router.push({ name: "LoginView" });
-        })
-        .catch((err) => {
-          if (err.message) {
-            error.value = "Bir hatayla karşılaştı";
-          }
-        });
+        } else {
+          e.value = true;
+          error.value = "En az 8 karakter parola belirleyin"
+        }
+
+      } else {
+        e.value = true;
+        error.value = "Email adresi geçersiz"
+      }
+
+
     };
     return {
       handleRegister,
@@ -98,6 +116,9 @@ export default {
       enteredCompanyAddress,
       enteredCompanyName,
       enteredCompanyPhone,
+      e,
+      error,
+      clearInput
     };
   },
 };
@@ -124,7 +145,7 @@ form {
   justify-content: center;
 }
 
-form > label {
+form>label {
   display: flex;
   justify-content: center;
 }
@@ -171,5 +192,4 @@ form > label {
     footer {
         grid-template-columns: 1fr 150px;
     }
-} */
-</style>
+} */</style>
