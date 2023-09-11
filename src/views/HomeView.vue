@@ -218,7 +218,7 @@ export default {
       console.log("filtrelenmiş: ", selectedCompany.value);
       const q = query(
         collection(db, "infos"),
-        where("id", "==", selectedCompany.value.cId)
+        where("id", "==", selectedCompany.value)
       );
       await getDocs(q).then((querySnapshot) => {
         querySnapshot.forEach(() => {

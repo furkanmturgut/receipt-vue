@@ -20,6 +20,9 @@
         placeholder="Parola gir"
       />
       <TfButtonView type="submit" label="Giriş Yap" />
+      <div v-if="e">
+        <p>Kullanıcı adı veya parola hatalı</p>
+      </div>
     </form>
   </div>
 </template>
@@ -32,6 +35,7 @@ export default {
   setup() {
     const auth = getAuth();
     const error = ref(null);
+    const e = ref(false)
     const router = useRouter();
     const enteredMail = ref(null);
     const enteredPassword = ref(null);
@@ -41,16 +45,18 @@ export default {
         .then(() => {
           enteredMail.value = "";
           enteredPassword.value = "";
+          e.value = false
           // console.log('OK')
           router.push({ name: "HomeView" });
         })
         .catch((err) => {
           if (err.message) {
+            e.value = true
             error.value = "Kullanıcı adı veya parola hatalı!";
           }
         });
     };
-    return { enteredMail, enteredPassword, handleLogin };
+    return { enteredMail, enteredPassword, handleLogin ,e};
   },
 };
 </script>
