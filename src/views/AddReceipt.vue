@@ -32,6 +32,9 @@
             align-items: center;
             text-align: center;
           ">📸</TfButtonView>
+        <!-- Kamera seç  -->
+        <TfDropdownView v-if="!(!isCameraOn1 || isPhotoTaken1)" v-model="currentCamera" :options="availableCameras"
+          optionValue="deviceId" optionLabel="label" @change="requestCameraAccess1"></TfDropdownView>
         <canvas ref="canvasElement1" style="display: none"></canvas>
         <img
           v-if="isPhotoTaken1"
@@ -89,15 +92,15 @@
       <!-- SLİP/TARİH -->
       <!-- SLİP/TARİH -->
       <h1 style="text-align: center">Fatura Tarihi</h1>
-      <TfInputView :class="{ 'p-invalid': !dateInput }" type="date" v-model="dateInput"
-        style="width: auto; height: 2rem" />
+
+      <TfInputView type="date" v-model="dateInput" min="2023-01-01" max="2023-12-31" style="width: auto; height: 2rem" />
       <!-- TARİH/TUTAR -->
       <!-- TARİH/TUTAR -->
       <!-- TARİH/TUTAR -->
       <h1 style="text-align: center">Tutar</h1>
 
-      <TfInputView :class="{ 'p-invalid': !paymentPrice }" type="number" style="width: auto; height: 2rem"
-        v-model="paymentPrice" placeholder="Ödeme Tutarı (TL)" />
+      <TfInputNumber v-model="paymentPrice" mode="currency" currency="TRY" locale="tr-TR"
+        style="width: auto; height: 2rem" placeholder="Ödeme Tutarı (TL)" />
 
       <!-- TUTAR/ÖDEME ŞEKLİ -->
       <!-- TUTAR/ÖDEME ŞEKLİ -->
@@ -127,6 +130,8 @@
       </div>
       <!-- OdemeSekli//Kaydet Buton -->
       <TfButtonView style="text-transform: uppercase; font-size: large" type="submit" label="Kaydet" />
+      <TfInlineMessage v-if="e">{{ error }}</TfInlineMessage>
+
     </form>
   </div>
 </template>
@@ -171,20 +176,34 @@ export default {
     const isPhotoTaken1 = ref(false);
     const isPhotoTaken2 = ref(false);
     const paymentMethod = ref(null);
-    const router = useRouter();
+    const currentCamera = ref(null);
     let cameraStream1 = null;
     let cameraStream2 = null;
     const availableCameras = ref([]);
     const newArrayList = ref([]);
+    const dateRegex = /^\d{4}\-\d{2}\-\d{2}$/;
+    const e = ref(false);
+    const error = ref(null);
 
+    onMounted(async () => {
+      availableCameras.value = await getAvailableCameras();
+      console.log(availableCameras.value[0].deviceId);
+      currentCamera.value = availableCameras.value[0].deviceId;
+    })
 
+    const getAvailableCameras = async () => {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const cameraList = devices.filter((d) => d.kind == "videoinput");
+      console.log("cameraList:", typeof cameraList, cameraList);
+      return cameraList;
+    };
 
     const requestCameraAccess1 = async () => {
       try {
         isPhotoTaken1.value = false;
         getAvailableCameras();
         cameraStream1 = await navigator.mediaDevices.getUserMedia({
-          video: true,
+          video: { deviceId: currentCamera.value }, //Buraya selectedDevice gelecek
         });
         console.log("currentCamera:", currentCamera.value, "stream", cameraStream1);
         videoElement1.value.srcObject = cameraStream1;
@@ -285,36 +304,30 @@ export default {
       }
     };
     const submitData = async () => {
-      if (
-        photoPng1.value &&
-        photoPng2.value &&
-        dateInput.value &&
-        paymentPrice.value &&
-        paymentMethod.value
+     
+      if (photoPng1.value && photoPng2.value) {
+        if (dateRegex.test(dateInput.value)) {
+          const payment = paymentPrice.value;
+          if (!(payment / 10**11)) {
+            try {
+              const id = Date.now();
+              const storageRef = FBref(storage, `infos/${id}`);
+              const storageRef2 = FBref(storage, `receipt/${id}`);
+              const fileSnapshot1 = await uploadBytes(storageRef, photoPng1.value);
+              const fileSnapshot2 = await uploadBytes(storageRef2, photoPng2.value);
+              const downloadURL1 = await getDownloadURL(fileSnapshot1.ref);
+              const downloadURL2 = await getDownloadURL(fileSnapshot2.ref);
+              const random = Math.floor(Math.random() * 100000);
+              stopCamera1();
+              stopCamera2();
 
-      ) {
-        try {
-          const id = Date.now();
-          const storageRef = FBref(storage, `infos/${id}`);
-          const storageRef2 = FBref(storage, `receipt/${id}`);
-          const fileSnapshot1 = await uploadBytes(storageRef, photoPng1.value);
-          const fileSnapshot2 = await uploadBytes(storageRef2, photoPng2.value);
-          const downloadURL1 = await getDownloadURL(fileSnapshot1.ref);
-          const downloadURL2 = await getDownloadURL(fileSnapshot2.ref);
-          const random = Math.floor(Math.random() * 100000);
-          stopCamera1();
-          stopCamera2();
+              const cN = query(collection(db, "companyInfo"), where("id", "==", auth.currentUser.uid));
+              const querySnapshot1 = await getDocs(cN);
+              querySnapshot1.forEach((doc) => {
+                newArrayList.value.push(doc.data());
+                //console.log(newArrayList)
 
-          const cN = query(collection(db, "companyInfo"), where("id", "==", auth.currentUser.uid));
-          const querySnapshot1 = await getDocs(cN);
-          querySnapshot1.forEach((doc) => {
-            newArrayList.value.push(doc.data());
-            //console.log(newArrayList)
-
-          });
-
-
-
+              });
 
               addDoc(collection(db, "infos"), {
                 id: auth.currentUser.uid,
@@ -367,12 +380,12 @@ export default {
       photoScreen2,
       photoPng1,
       photoPng2,
-      availableCameras,
+      
       currentCamera,
       dateInput,
       paymentMethod,
       availableCameras,
-      currentCamera,
+      
       paymentPrice,
       //
       isCameraOn1,
