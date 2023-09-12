@@ -23,6 +23,11 @@ import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import InlineMessage from 'primevue/inlinemessage';
 import InputNumber from 'primevue/inputnumber';
+import ProgressSpinner from 'primevue/progressspinner';
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
+import ConfirmDialog from 'primevue/confirmdialog';
+import ConfirmationService from 'primevue/confirmationservice';
 
 const firebaseConfig = {
   apiKey: "AIzaSyB-I2nFAzW2hAijf70StQ_YxD-uXvbbFBo",
@@ -38,6 +43,8 @@ initializeApp(firebaseConfig);
 const app = createApp(App);
 app.use(router);
 app.use(PrimeVue);
+app.use(ToastService);
+app.use(ConfirmationService);
 
 app.component("TfButtonView", Button);
 app.component("TfPasswordView", Password);
@@ -55,6 +62,8 @@ app.component("TfAutoComplete",AutoComplete);
 app.component("TfInlineMessage",InlineMessage);
 app.component("TfInputNumber",InputNumber);
 app.component("TfDropdownView",Dropdown);
-
+app.component("TfSpinner",ProgressSpinner);
+app.component("TfToast",Toast);
+app.component("TfConfirmDialog",ConfirmDialog);
 
 app.mount("#app");

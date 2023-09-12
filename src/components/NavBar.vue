@@ -1,10 +1,28 @@
 <template>
   <div class="navbar">
     <nav>
-      <img src="@/assets/maviLogo.jpeg" @click="homeTo('/')" alt="Turkuvaz Logo" class="logo" />
-      <TfButtonView @click="handleLogout" class="button" v-if="user" label="Çıkış" />
-      <TfButtonView v-else-if="!user" @click="homeTo('register')" label="Üye ol" />
-      <TfButtonView v-if="!user" @click="homeTo('login')" label="Giriş yap" />
+      <img
+        src="@/assets/maviLogo.jpeg"
+        @click="homeTo('/')"
+        alt="Turkuvaz Logo"
+        class="logo"
+      />
+      <TfButtonView
+        v-if="user"
+        label="Çıkış"
+        class="button"
+        @click="handleLogout"
+      />
+      <div class="noUser" v-else>
+        <TfButtonView
+          label="Üye ol"
+          @click="homeTo('register')"
+        />
+        <TfButtonView
+          label="Giriş yap"
+          @click="homeTo('login')"
+        />
+      </div>
     </nav>
   </div>
 </template>
@@ -45,27 +63,30 @@ export default {
 </script>
 
 <style scoped>
-.navbar {
-  padding: 16px 10px;
-  background: linear-gradient(to bottom, #a1f3ee, #61bdf3);
-}
-button.p-button.p-component.p-splitbutton-defaultbutton 
-{
+button.p-button.p-component.p-splitbutton-defaultbutton {
   padding: 7px 60px;
 }
 nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 15px;
-  max-width: 1200px;
   margin: 0 auto;
+  padding: 16px 10px;
+  background: linear-gradient(to bottom, #a1f3ee, #61bdf3);
+}
+nav > .noUser {
+  gap: 15px;
+  display: flex;
+  justify-content: center;
 }
 .logo {
-  width: 160px; /* Genişlik ayarını değiştirebilirsiniz */
-  height: auto; /* Yükseklik otomatik olarak ayarlanır */
-  margin-right: 20px; /* Logo ile butonlar arasına bir boşluk ekler */
+  max-width: 160px;
+  height: auto;
+  margin-right: 20px;
+  margin-left: 20px;
   cursor: pointer;
+  flex-shrink: 0;
 }
-
 </style>

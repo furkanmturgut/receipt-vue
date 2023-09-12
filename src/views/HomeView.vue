@@ -1,33 +1,22 @@
 <template>
   <div>
-    <h3 style="display: flex; justify-content: center">HomeView</h3>
     <div class="container" id="homeViewContainer">
       <p>Hoş geldiniz</p>
-      <TfSplitButtonView
-        v-if="!isSearchMode"
-        label="Fiş Ekle"
-        icon="pi pi-plus"
-        :model="splitMenu"
-        @click="addReceipt"
-      />
+
+      <TfSplitButtonView v-if="!isSearchMode" label="Fiş Ekle" icon="pi pi-plus" :model="splitMenu" @click="addReceipt" />
       <div v-else>
-        <TfButtonView
-          label="Geri"
-          icon="pi pi-arrow-left"
-          @click="cancelSearch"
-          v-model="searchText"
-          style="min-width: 100px"
-        />
+        <TfButtonView label="Geri" icon="pi pi-arrow-left" @click="cancelSearch" v-model="searchText"
+          style="min-width: 100px" />
         <!-- <TfInputView v-model="searchText" placeholder="ID girin" @keydown.enter="searchReceipt" /> - -->
-        <TfAutoComplete
-          v-model="selectedCompany"
-          dropdown
-          optionLabel="name"
-          :suggestions="items"
-          @complete="autoCompSearch"
-          @item-select="filterCompany"
-        /><!--           
+        <TfAutoComplete v-model="selectedCompany" dropdown optionLabel="name" :suggestions="items"
+          @complete="autoCompSearch" @item-select="filterCompany" /><!--           
            complete: yazma işlemi tamamlandığında, change: yazıldığında tıklandığında vs. -->
+      </div>
+      <div>
+        <p>{{ }}</p>
+      </div>
+      <div v-if="isLoading">
+        <TfSpinner />
       </div>
       <list-component :slipsList="slipsList" @itemClick="handleClick">
         <!-- Slipslist ismi değişebilir-->
@@ -62,11 +51,13 @@ export default {
     const adminId = vueRef([]);
     const slipsList = vueRef([]);
     const splitMenu = vueRef([]);
-    const isSearchMode = vueRef(false);
+    const items = vueRef([]);
+    const allUserData = vueRef([]);
+    const companyList = vueRef([]);
     const searchText = vueRef("");
     const selectedCompany = vueRef("");
-    const companyList = vueRef([]);
-    const items = vueRef([]);
+    const isSearchMode = vueRef(false);
+    const isLoading = vueRef(true)
 
     const sortByTime = async (type) => {
       const q = query(collection(db, "infos"), orderBy("receiptDate", type));
@@ -111,20 +102,20 @@ export default {
       });
 
       onAuthStateChanged(auth, (user) => {
+        isLoading.value = false
         if (user) {
           myId.value = user.uid;
           adminId.value.forEach((admins) => {
             if (myId.value === admins) {
-              // console.log("Admin girişi");
               isUser.value = false;
+              console.log("Admin Girişi");
               fetchData();
               return;
             }
           });
-
           if (isUser.value == true) {
             console.log("Kullanıcım Girişi");
-            fetchUserData();
+            fetchData();
           }
         }
       });
@@ -174,39 +165,36 @@ export default {
         querySnapshot.forEach((doc) => {
           slipsList.value.push(doc.data());
         });
-
         //Users/Company
         const companyQuery = query(collection(db, "companyInfo"));
-        const companyQSnapshot = await getDocs(companyQuery);
+        const compQuerrySnapshot = await getDocs(companyQuery);
 
-        if (companyQSnapshot.size === 0) throw new Error("No companies found");
-        companyQSnapshot.forEach((value) => {
-          companyList.value.push({
+        if (compQuerrySnapshot.size === 0) throw new Error("No companies found");
+        compQuerrySnapshot.forEach((value) => {
+          allUserData.value.push({
             companyName: value.data().companyName,
             companyId: value.data().id,
           });
         });
+        console.log("all user data", allUserData, isUser.value)
+        if (!isUser.value) {
+          console.log("calisti")
+          companyList.value = allUserData.value;
+        } else {
+          fetchUserData();
+        }
       };
 
-      const fetchUserData = async () => {
-        const q = query(collection(db, "infos"), where("id", "==", myId.value));
-
-        // Sorguyu kullanarak verileri alın
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          slipsList.value.push(doc.data());
-        });
-        //User/Company
-        const companyQuery = query(collection(db, "companyInfo"));
-        const companyQSnapshot = await getDocs(companyQuery);
-
-        if (companyQSnapshot.size === 0) throw new Error("No companies found");
-        companyQSnapshot.forEach((value) => {
-          companyList.value.push({
-            companyName: value.data().companyName,
-            companyId: value.data().id,
-          });
-        });
+      const fetchUserData = () => {
+        companyList.value = allUserData.value.forEach((user) => {
+          console.log("user", user);
+          if (user.companyId == myId.value)
+            return {
+              companyId: user.companyId,
+              companyName: user.companyName,
+            }
+        })
+        console.log("complist", companyList.value)
       };
     });
 
@@ -215,10 +203,9 @@ export default {
     };
 
     const filterCompany = async () => {
-      console.log("filtrelenmiş: ", selectedCompany.value);
-      const q = query(
-        collection(db, "infos"),
-        where("id", "==", selectedCompany.value)
+      console.log("şu şirket filtrelendi: ", selectedCompany.value);
+      const q = query(collection(db, "infos"),
+        where("id", "==", selectedCompany.value.cId)
       );
       await getDocs(q).then((querySnapshot) => {
         querySnapshot.forEach(() => {
@@ -249,20 +236,15 @@ export default {
       let _companys = [];
       items.value = [];
       companyList.value.forEach((company) => {
-        if (
-          company.companyName.toLowerCase().includes(event.query.toLowerCase())
-        ) {
+        if (company.companyName.toLowerCase().includes(event.query.toLowerCase())) {
           _companys.push(company);
         }
       });
-      console.log(typeof _companys, "_companys: ", _companys);
       _companys.forEach((item) => {
         items.value.push({
           name: item.companyName,
           cId: item.companyId,
         })
-        const combinedString = `${item.companyName} /*/ ${item.companyId}`;
-        items.value.push(combinedString);
       });
     };
 
@@ -280,6 +262,7 @@ export default {
       items,
       isSearchMode,
       isUser,
+      isLoading
     };
   },
 };

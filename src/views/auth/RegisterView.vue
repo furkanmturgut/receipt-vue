@@ -6,8 +6,7 @@
       <TfInputView v-model="enteredMail" placeholder="E-mail Adresi Giriniz" @focus="clearInput" />
 
       <label>Parola</label>
-      <TfPasswordView type="password" v-model="enteredPass" placeholder="Parola Belirleyin" toggleMask
-        @focus="clearInput" />
+      <TfPasswordView type="password" v-model="enteredPass" placeholder="Parola Belirleyin" toggleMask @focus="clearInput" />
 
       <label>Firma Adı</label>
       <TfInputView type="text" v-model="enteredCompanyName" placeholder="Turkuvaz İnovasyon A.Ş." @focus="clearInput" />
@@ -51,23 +50,21 @@ export default {
     }
 
     const handleRegister = () => {
-      //console.log("Kayıt başarılı");
       if (emailRegex.test(enteredMail.value)) {
-        if (enteredPass.value.length > 6) {
-          if (enteredCompanyName.value.length > 4) {
-            if (enteredCompanyPhone.value.length > 9) {
-              if (enteredCompanyAddress.value.length > 20) {
+        if (enteredPass.value.length >= 6) {
+          if (enteredCompanyName.value.length >= 4) {
+            if (enteredCompanyPhone.value.length >= 10) {
+              if (enteredCompanyAddress.value.length >= 20) {
                 createUserWithEmailAndPassword(auth, enteredMail.value, enteredPass.value)
                   .then(() => {
                     try {
                       addDoc(collection(db, "companyInfo"), {
                         id: auth.currentUser.uid,
-                        companyName: enteredCompanyName.value,
                         companyMail: enteredMail.value,
+                        companyName: enteredCompanyName.value,
                         companyPhone: enteredCompanyPhone.value,
                         companyAddress: enteredCompanyAddress.value,
                       });
-                      // console.log("Document written with ID: ", docRef.id);
                     } catch (err) {
                       if (err.message) {
                         e.value = true
@@ -79,7 +76,13 @@ export default {
                   .catch((err) => {
                     if (err.message) {
                       e.value = true
-                      error.value = "Lütfen tüm alanları doldurunuz";
+                      const member = "Firebase: Error (auth/email-already-in-use).";
+                     if(member != null){
+                      error.value = "Bu email sisteme zaten kayıtlı";
+                      console.log(err.message)
+                     }else {
+                      error.value = "Lütfen tüm alanları doldurunuz"
+                     }
                     }
                   });
 
@@ -91,22 +94,18 @@ export default {
               e.value = true;
               error.value = "Geçerli bir telefon numarası giriniz"
             }
-
           } else {
             e.value = true;
             error.value = "Şirket adını en az 5 karakter olacak şekikde giriniz"
           }
         } else {
           e.value = true;
-          error.value = "En az 8 karakter parola belirleyin"
+          error.value = "En az 6 karakter parola belirleyin"
         }
-
       } else {
         e.value = true;
         error.value = "Email adresi geçersiz"
       }
-
-
     };
     return {
       handleRegister,
@@ -129,67 +128,20 @@ export default {
   background-color: #64ccc5;
   min-height: 500px;
 }
-
 h3 {
   display: flex;
   justify-content: center;
 }
-
 form {
   gap: 5px;
   padding: 0;
   margin: 0;
-
   display: grid;
   grid-column: 1fr;
   justify-content: center;
 }
-
-form>label {
+form>* {
   display: flex;
   justify-content: center;
 }
-
-/* @media (width < 900px) {
-    .nav-links {
-        display: none;
-    }
-
-    header {
-        grid-template-columns: repeat(1, 1fr);
-    }
-
-    header .image {
-        grid-area: 1/1/2/2;
-    }
-
-    .features {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .pricing {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    footer {
-        grid-template-columns: 1fr 200px;
-    }
-}
-
-@media (width < 600px) {
-    header .image::before {
-        display: none;
-    }
-
-    .features {
-        grid-template-columns: repeat(1, 1fr);
-    }
-
-    .pricing {
-        grid-template-columns: repeat(1, 1fr);
-    }
-
-    footer {
-        grid-template-columns: 1fr 150px;
-    }
-} */</style>
+</style>

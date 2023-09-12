@@ -1,13 +1,8 @@
 <template>
   <div>
-    <detail-component
-      :detailList="detailList"
-      @deleteClick="deleteItem"
-      @updateClick="updateItem"
-      @paymentEmit="handleChildPayMethod"
-      @dateEmit="handleChildDate"
-      @priceEmit="handleChildPrice"
-    >
+
+    <detail-component :detailList="detailList" @deleteClick="deleteItem" @updateClick="updateItem"
+      @paymentEmit="handleChildPayMethod" @dateEmit="handleChildDate" @priceEmit="handleChildPrice">
     </detail-component>
   </div>
 </template>
@@ -39,6 +34,7 @@ export default {
     const upDate = ref(null);
     const updatePayMethod = ref(null);
     const updatePrice = ref(null);
+    const isLoading = ref(true);
 
     onMounted(async () => {
       try {
@@ -79,7 +75,7 @@ export default {
 
     const handleChildPrice = (newPrice) => {
       updatePrice.value = newPrice.value;
-      console.log("Yeni fiyat:", newPrice.value);
+      console.log("Yeni fiyat:", updatePrice.value);
     };
 
     const handleChildDate = (newDate) => {
@@ -106,6 +102,7 @@ export default {
       handleChildPrice,
       handleChildPayMethod,
       handleChildDate,
+      isLoading
     };
   },
 };
