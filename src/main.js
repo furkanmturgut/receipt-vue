@@ -1,5 +1,5 @@
-import { createApp } from "vue";
 import App from "./App.vue";
+import { createApp } from "vue";
 import router from "./router/router.js";
 import { initializeApp } from "firebase/app";
 
@@ -28,6 +28,7 @@ import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import ConfirmDialog from 'primevue/confirmdialog';
 import ConfirmationService from 'primevue/confirmationservice';
+import Camera from "simple-vue-camera";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB-I2nFAzW2hAijf70StQ_YxD-uXvbbFBo",
@@ -65,5 +66,6 @@ app.component("TfDropdownView",Dropdown);
 app.component("TfSpinner",ProgressSpinner);
 app.component("TfToast",Toast);
 app.component("TfConfirmDialog",ConfirmDialog);
+app.component("CameraDiv",Camera);
 
 app.mount("#app");

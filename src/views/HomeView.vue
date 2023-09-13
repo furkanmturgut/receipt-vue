@@ -189,6 +189,7 @@ export default {
           });
 
         });
+        
         if (!isUser.value) {
           companyList.value = allUserData.value;
         } else {
@@ -197,9 +198,14 @@ export default {
       };
 
       const fetchUserData = () => {
-        slipsList.value = slipsList.value.filter((data) => 
+       
+        if(slipsList.value.length<=0){
+          console.log("Hata")
+        }else {
+          slipsList.value = slipsList.value.filter((data) => 
           data.id == myId.value
         )
+        }
       };
     });
 
