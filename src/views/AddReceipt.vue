@@ -3,74 +3,163 @@
     <form @submit.prevent="submitData">
       <div id="fatura">
         <h1 style="text-align: center">Fatura</h1>
-        <video ref="videoElement1" class="videoCam" style="display: none" id="video1" autoplay></video>
-        <TfButtonView v-if="!isCameraOn1 || isPhotoTaken1" class="openCamera1" @click="requestCameraAccess(0)">Kamerayı aç
+        <video
+          ref="videoElement1"
+          class="videoCam"
+          style="display: none"
+          id="video1"
+          autoplay
+        ></video>
+        <TfButtonView
+          v-if="!isCameraOn1 || isPhotoTaken1"
+          class="openCamera1"
+          @click="requestCameraAccess(0)"
+          >Kamerayı aç
         </TfButtonView>
-        <TfButtonView v-else @click="takePhoto(0)" style="
+        <TfButtonView
+          id="takePhotoBtn1"
+          v-else
+          @click="takePhoto(0)"
+          style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          ">📸</TfButtonView>
+          "
+          >📸</TfButtonView
+        >
         <!-- Kamera seç  -->
-        <TfDropdownView id="chooseCamera1" v-if="!(!isCameraOn1 || isPhotoTaken1)" v-model="currentCamera"
-          :options="availableCameras" optionValue="deviceId" optionLabel="label" @change="changeCamera(0)">
+        <TfDropdownView
+          id="chooseCamera1"
+          v-if="!(!isCameraOn1 || isPhotoTaken1)"
+          v-model="currentCamera"
+          :options="availableCameras"
+          optionValue="deviceId"
+          optionLabel="label"
+          @change="changeCamera(0)"
+        >
         </TfDropdownView>
         <canvas ref="canvasElement1" style="display: none"></canvas>
-        <img v-if="isPhotoTaken1" :src="photoScreen1" id="video" alt="Çekilen Fotoğraf" class="videoCam" />
+        <img
+          v-if="isPhotoTaken1"
+          :src="photoScreen1"
+          id="video"
+          alt="Çekilen Fotoğraf"
+          class="videoCam"
+        />
       </div>
       <!-- FATURA/SLİP -->
       <!-- FATURA/SLİP -->
       <!-- FATURA/SLİP -->
       <div class="slip">
         <h1 style="text-align: center">Slip</h1>
-        <video class="videoCam" id="video2" ref="videoElement2" style="display: none" autoplay />
-        <TfButtonView v-if="!isCameraOn2 || isPhotoTaken2" class="openCamera2" @click="requestCameraAccess(1)" style="
+        <video
+          class="videoCam"
+          id="video2"
+          ref="videoElement2"
+          style="display: none"
+          autoplay
+        />
+        <TfButtonView
+          v-if="!isCameraOn2 || isPhotoTaken2"
+          class="openCamera2"
+          @click="requestCameraAccess(1)"
+          style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          ">Kamerayı aç</TfButtonView>
-        <TfButtonView v-else @click="takePhoto(1)" style="
+          "
+          >Kamerayı aç</TfButtonView
+        >
+        <TfButtonView
+          id="takePhotoBtn2"
+          v-else
+          @click="takePhoto(1)"
+          style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          ">📸</TfButtonView>
-        <TfDropdownView v-if="!(!isCameraOn2 || isPhotoTaken2)" v-model="currentCamera" :options="availableCameras"
-          optionValue="deviceId" optionLabel="label" @change="changeCamera(1)" id="chooseCamera2"></TfDropdownView>
+          "
+          >📸</TfButtonView
+        >
+        <TfDropdownView
+          v-if="!(!isCameraOn2 || isPhotoTaken2)"
+          v-model="currentCamera"
+          :options="availableCameras"
+          optionValue="deviceId"
+          optionLabel="label"
+          @change="changeCamera(1)"
+          id="chooseCamera2"
+        ></TfDropdownView>
         <canvas ref="canvasElement2" style="display: none"></canvas>
-        <img v-if="isPhotoTaken2" :src="photoScreen2" class="videoCam" id="video" alt="Çekilen Fotoğraf" />
+        <img
+          v-if="isPhotoTaken2"
+          :src="photoScreen2"
+          class="videoCam"
+          id="video"
+          alt="Çekilen Fotoğraf"
+        />
       </div>
       <!-- SLİP/TARİH -->
       <!-- SLİP/TARİH -->
       <!-- SLİP/TARİH -->
       <h1 style="text-align: center">Fatura Tarihi</h1>
 
-      <TfInputView type="date" v-model="dateInput" :max="todayDate" min="2000-01-01" style="width: auto; height: 2rem"
-        @focus="clearInput" onkeydown="return false" />
+      <TfInputView
+        type="date"
+        v-model="dateInput"
+        :max="todayDate"
+        min="2000-01-01"
+        style="width: auto; height: 2rem"
+        @focus="clearInput"
+        onkeydown="return false"
+      />
       <!-- TARİH/TUTAR -->
       <!-- TARİH/TUTAR -->
       <!-- TARİH/TUTAR -->
       <h1 style="text-align: center">Tutar</h1>
 
-      <TfInputView v-model="paymentPrice" type="number" placeholder="Ödeme Tutarı (TL)" @focus="clearInput"  />
+      <TfInputView
+        v-model="paymentPrice"
+        type="number"
+        placeholder="Ödeme Tutarı (TL)"
+        @focus="clearInput"
+      />
 
       <!-- TUTAR/ÖDEME ŞEKLİ -->
       <!-- TUTAR/ÖDEME ŞEKLİ -->
       <h1 style="text-align: center">Ödeme Şekli</h1>
-      <div style="flex-wrap: wrap; justify-content: center; column-gap: 25px" class="flex">
+      <div
+        style="flex-wrap: wrap; justify-content: center; column-gap: 25px"
+        class="flex"
+      >
         <div class="flex align-items-center">
           <TfRadioView v-model="paymentMethod" name="kart" value="kart" />
-          <label for="kart" style="font-size: 1.5rem; font-weight: bold" class="ml-2">Kart</label>
+          <label
+            for="kart"
+            style="font-size: 1.5rem; font-weight: bold"
+            class="ml-2"
+            >Kart</label
+          >
         </div>
         <div class="flex align-items-center">
           <TfRadioView v-model="paymentMethod" name="nakit" value="nakit" />
-          <label for="nakit" style="font-size: 1.5rem; font-weight: bold" class="ml-2">Nakit</label>
+          <label
+            for="nakit"
+            style="font-size: 1.5rem; font-weight: bold"
+            class="ml-2"
+            >Nakit</label
+          >
         </div>
       </div>
       <!-- OdemeSekli//Kaydet Buton -->
-      <TfButtonView style="text-transform: uppercase; font-size: large" type="submit" label="Kaydet" />
+      <TfButtonView
+        style="text-transform: uppercase; font-size: large"
+        type="submit"
+        label="Kaydet"
+      />
       <TfInlineMessage v-if="hasError">{{ error }}</TfInlineMessage>
     </form>
   </div>
@@ -122,7 +211,7 @@ export default {
     const hasError = ref(false);
     const error = ref(null);
 
-    //Date Validation 
+    //Date Validation
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
@@ -150,31 +239,35 @@ export default {
     const requestCameraAccess = async (type) => {
       try {
         if (type == 0) {
-          isPhotoTaken1.value = false;
           getAvailableCameras();
           cameraStream1.value = await navigator.mediaDevices.getUserMedia({
             video: { deviceId: currentCamera.value }, //Buraya selectedDevice gelecek
           });
           videoElement1.value.srcObject = cameraStream1.value;
           videoElement1.value.style.display = "block";
-          videoElement1.value.play();
+          if (isPhotoTaken1.value) {
+            videoElement1.value.play();
+          }
+          isPhotoTaken1.value = false;
           isCameraOn1.value = true;
-          const targetElement = document.querySelector("#chooseCamera1");
+          const targetElement = document.querySelector("#video1");
           if (targetElement)
             targetElement.scrollIntoView({
               behavior: "smooth",
               block: "start",
             });
         } else if (type == 1) {
-          isPhotoTaken2.value = false;
           cameraStream2.value = await navigator.mediaDevices.getUserMedia({
             video: { deviceId: currentCamera.value },
           });
           videoElement2.value.srcObject = cameraStream2.value;
           videoElement2.value.style.display = "block";
-          videoElement2.value.play();
+          isPhotoTaken2.value = false;
+          if (isPhotoTaken2.value) {
+            videoElement2.value.play();
+          }
           isCameraOn2.value = true;
-          const targetElement = document.querySelector("#chooseCamera2");
+          const targetElement = document.querySelector("#video2");
           if (targetElement)
             targetElement.scrollIntoView({
               behavior: "smooth",
@@ -306,8 +399,8 @@ export default {
                 console.error(err);
               }
             } else {
-              hasError.value = true
-              error.value = "Ödeme yöntemi seçiniz."
+              hasError.value = true;
+              error.value = "Ödeme yöntemi seçiniz.";
             }
           } else {
             hasError.value = true;
@@ -356,7 +449,7 @@ export default {
       error,
       clearInput,
       //
-      todayDate
+      todayDate,
     };
   },
 };

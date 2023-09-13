@@ -1,19 +1,30 @@
 <template>
   <div>
     <div class="container" id="homeViewContainer">
-      <p>Hoş geldiniz</p>
-
+      <div id="welcomeText" style="
+          display: flex;
+          align-content: center;
+          flex-direction: column;
+          align-items: center;
+          flex-wrap: wrap;
+        ">
+        <p>Hoş geldiniz</p>
+        <p v-if="currentCompanyName != 'ADMIN'"><strong>{{ currentCompanyName.companyName }}</strong></p>
+        <p v-else><strong>{{ currentCompanyName }}</strong></p>
+      </div>
       <TfSplitButtonView v-if="!isSearchMode" label="Fiş Ekle" icon="pi pi-plus" :model="splitMenu" @click="addReceipt" />
-      <div v-else>
+      <div v-else style="
+          display: flex;
+          flex-wrap: wrap;
+          align-content: center;
+          justify-content: center;
+          gap: 5px;
+        ">
         <TfButtonView label="Geri" icon="pi pi-arrow-left" @click="cancelSearch" v-model="searchText"
           style="min-width: 100px" />
-        <!-- <TfInputView v-model="searchText" placeholder="ID girin" @keydown.enter="searchReceipt" /> - -->
         <TfAutoComplete v-model="selectedCompany" dropdown optionLabel="name" :suggestions="items"
-          @complete="autoCompSearch" @item-select="filterCompany" /><!--           
-           complete: yazma işlemi tamamlandığında, change: yazıldığında tıklandığında vs. -->
-      </div>
-      <div>
-        <p>{{ }}</p>
+          @complete="autoCompSearch" @item-select="filterCompany" />
+        <!-- complete: yazma işlemi tamamlandığında, change: yazıldığında tıklandığında vs. -->
       </div>
       <div v-if="isLoading">
         <TfSpinner />
@@ -55,9 +66,10 @@ export default {
     const allUserData = vueRef([]);
     const companyList = vueRef([]);
     const searchText = vueRef("");
+    const currentCompanyName = vueRef("");
     const selectedCompany = vueRef("");
     const isSearchMode = vueRef(false);
-    const isLoading = vueRef(true)
+    const isLoading = vueRef(true);
 
     const sortByTime = async (type) => {
       const q = query(collection(db, "infos"), orderBy("receiptDate", type));
@@ -98,24 +110,30 @@ export default {
       const querySnapshot = await getDocs(collection(db, "admins"));
       querySnapshot.forEach((doc) => {
         adminId.value.push(doc.data().id);
-        //ADMINLERI TOPLA
+        //ADMINI BUL
       });
 
-      onAuthStateChanged(auth, (user) => {
-        isLoading.value = false
+      onAuthStateChanged(auth,async (user)  =>  {
+        isLoading.value = false;
         if (user) {
           myId.value = user.uid;
           adminId.value.forEach((admins) => {
             if (myId.value === admins) {
               isUser.value = false;
               console.log("Admin Girişi");
+              currentCompanyName.value = "ADMIN";
               fetchData();
               return;
             }
           });
           if (isUser.value == true) {
             console.log("Kullanıcım Girişi");
-            fetchData();
+           await  fetchData();
+            currentCompanyName.value = allUserData.value.find( (datas) => {
+             return datas.companyId == myId.value
+            }
+            );
+
           }
         }
       });
@@ -165,20 +183,21 @@ export default {
         querySnapshot.forEach((doc) => {
           slipsList.value.push(doc.data());
         });
+        //console.log("Slips List: ",slipsList.value)
         //Users/Company
         const companyQuery = query(collection(db, "companyInfo"));
         const compQuerrySnapshot = await getDocs(companyQuery);
 
-        if (compQuerrySnapshot.size === 0) throw new Error("No companies found");
+        if (compQuerrySnapshot.size === 0)
+          throw new Error("No companies found");
         compQuerrySnapshot.forEach((value) => {
           allUserData.value.push({
             companyName: value.data().companyName,
             companyId: value.data().id,
           });
+         
         });
-        console.log("all user data", allUserData, isUser.value)
         if (!isUser.value) {
-          console.log("calisti")
           companyList.value = allUserData.value;
         } else {
           fetchUserData();
@@ -186,15 +205,10 @@ export default {
       };
 
       const fetchUserData = () => {
-        companyList.value = allUserData.value.forEach((user) => {
-          console.log("user", user);
-          if (user.companyId == myId.value)
-            return {
-              companyId: user.companyId,
-              companyName: user.companyName,
-            }
-        })
-        console.log("complist", companyList.value)
+        companyList.value = allUserData.value.filter((user) => {
+          user.companyId == myId.value;
+        });
+        console.log("complist", companyList.value);
       };
     });
 
@@ -204,7 +218,8 @@ export default {
 
     const filterCompany = async () => {
       console.log("şu şirket filtrelendi: ", selectedCompany.value);
-      const q = query(collection(db, "infos"),
+      const q = query(
+        collection(db, "infos"),
         where("id", "==", selectedCompany.value.cId)
       );
       await getDocs(q).then((querySnapshot) => {
@@ -233,18 +248,15 @@ export default {
     };
 
     const autoCompSearch = (event) => {
-      let _companys = [];
       items.value = [];
-      companyList.value.forEach((company) => {
-        if (company.companyName.toLowerCase().includes(event.query.toLowerCase())) {
-          _companys.push(company);
-        }
-      });
+      const _companys = companyList.value.filter((company) =>
+        company.companyName.toLowerCase().includes(event.query.toLowerCase())
+      );
       _companys.forEach((item) => {
         items.value.push({
           name: item.companyName,
           cId: item.companyId,
-        })
+        });
       });
     };
 
@@ -257,12 +269,13 @@ export default {
       slipsList,
       splitMenu,
       searchText,
+      currentCompanyName,
       companyList,
       selectedCompany,
       items,
       isSearchMode,
       isUser,
-      isLoading
+      isLoading,
     };
   },
 };

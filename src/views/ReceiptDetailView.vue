@@ -1,7 +1,10 @@
 <template>
   <div>
+    <div v-if="isLoading" style="align-items: center; justify-content: center; display: flex;">
+      <TfSpinner />
+    </div>
 
-    <detail-component :detailList="detailList" @deleteClick="deleteItem" @updateClick="updateItem"
+    <detail-component v-else :detailList="detailList" @deleteClick="deleteItem" @updateClick="updateItem"
       @paymentEmit="handleChildPayMethod" @dateEmit="handleChildDate" @priceEmit="handleChildPrice">
     </detail-component>
   </div>
@@ -46,6 +49,8 @@ export default {
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           detailList.value.push(doc.data());
+          isLoading.value = false
+          console.log(isLoading.value)
         });
       } catch (error) {
         console.error("infos database error:", error);
@@ -64,6 +69,8 @@ export default {
           receiptDate: upDate.value,
           price: updatePrice.value,
         };
+        isLoading.value = false
+
         await updateDoc(docum.ref, firstUpdate);
       }
     };
@@ -108,4 +115,4 @@ export default {
 };
 </script>
 
-<styles scoped></styles>
+<style scoped></style>

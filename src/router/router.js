@@ -3,21 +3,11 @@ import HomeView from "../views/HomeView.vue";
 import RegisterView from "../views/auth/RegisterView.vue";
 import LoginView from "../views/auth/LoginView.vue";
 import AddReceipt from "../views/AddReceipt.vue";
-import CopyDemo from "../views/CopyDemo.vue";
 import ReceiptDetailView from "../views/ReceiptDetailView.vue";
 import ErrorComponent from "../components/ErrorComponent.vue";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-// function isLoggedIn() {
-//   let auth = getAuth().currentUser;
-//   console.log(auth);
-//   if (auth) {
-//     return true;
-//   } else return false;
-// }
-
 const routes = [
-  { path: "/copy", component: CopyDemo },
 
   {
     path: "/login",
