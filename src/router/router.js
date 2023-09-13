@@ -6,6 +6,7 @@ import AddReceipt from "../views/AddReceipt.vue";
 import ReceiptDetailView from "../views/ReceiptDetailView.vue";
 import ErrorComponent from "../components/ErrorComponent.vue";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import ResetPassword from '../views/auth/ResetPassword.vue'
 
 const routes = [
 
@@ -20,6 +21,12 @@ const routes = [
     component: RegisterView,
     name: "RegisterView",
     meta: { requiresAuth: false },
+  },
+  {
+    path:"/forgot-password",
+    component:ResetPassword,
+    name:"ResetPassword",
+    meta:{requiresAuth:false}
   },
   {
     path: "/",

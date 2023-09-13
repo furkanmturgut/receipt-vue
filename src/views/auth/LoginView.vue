@@ -12,10 +12,16 @@
       <TfPasswordView :feedback="false" type="password" class="passwordDiv" @focus="clearError" v-model="enteredPassword"
         placeholder="Parola gir" toggleMask />
 
+        <router-link :to="{name:'ResetPassword'}">Parolamı unuttum?</router-link>
+
       <TfButtonView type="submit" label="Giriş Yap" />
-      <TfInlineMessage severity="info" v-if="e">{{ error }}</TfInlineMessage>
 
     </form>
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
+      <TfInlineMessage severity="info" v-if="e">{{ error }}</TfInlineMessage>
+
+
+    </div>
   </div>
 </template>
 <script>
@@ -74,6 +80,15 @@ export default {
 </script>
 
 <style scoped>
+a{
+  text-decoration: none;
+  display: flex;
+  justify-content: right;
+  color: #000;
+  margin-top:5px ;
+  margin-bottom: 5px;
+}
+
 form {
   display: flex;
   flex-direction: column;

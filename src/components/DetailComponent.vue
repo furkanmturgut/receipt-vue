@@ -21,7 +21,7 @@
             <div id="methodData" style="display: -webkit-inline-box">
               <i class="pi pi-wallet" style="margin-right: 0.5rem"></i>
               <span class="font-semibold" style="max-width: auto;">
-                <TfInputView :value="!isUpdate ? item.paymentMethod : payMethods" v-model="payMethods"
+                <TfInputView :value="!isUpdate ? item.paymentMethod : payMethods" v-model="payMethods"  onkeydown="return false" 
                   :disabled="!isUpdate" />
               </span>
             </div>
@@ -152,6 +152,7 @@ export default {
     const emitPrice = () => {
       const payment = itemPrices.value;
       if (!Math.floor(payment / 10 ** 9)) {
+        e.value = false
         emit("priceEmit", itemPrices);
       } else {
         e.value = true;

@@ -21,7 +21,7 @@
           gap: 5px;
         ">
         <TfButtonView label="Geri" icon="pi pi-arrow-left" @click="cancelSearch" v-model="searchText"
-          style="min-width: 100px" />
+          style="min-width: 100px" id="returnButton" />
         <TfAutoComplete v-model="selectedCompany" dropdown optionLabel="name" :suggestions="items"
           @complete="autoCompSearch" @item-select="filterCompany" />
         <!-- complete: yazma işlemi tamamlandığında, change: yazıldığında tıklandığında vs. -->
@@ -92,12 +92,7 @@ export default {
         collection(db, "infos"),
         where("paymentMethod", "==", type)
       );
-      /// listeyi boşalttık
-      await getDocs(q).then((querySnapshot) => {
-        querySnapshot.forEach(() => {
-          slipsList.value = [];
-        });
-      });
+      slipsList.value = [];
       // listeyi doldur
       await getDocs(q).then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -113,7 +108,7 @@ export default {
         //ADMINI BUL
       });
 
-      onAuthStateChanged(auth,async (user)  =>  {
+      onAuthStateChanged(auth, async (user) => {
         isLoading.value = false;
         if (user) {
           myId.value = user.uid;
@@ -128,12 +123,10 @@ export default {
           });
           if (isUser.value == true) {
             console.log("Kullanıcım Girişi");
-           await  fetchData();
-            currentCompanyName.value = allUserData.value.find( (datas) => {
-             return datas.companyId == myId.value
-            }
-            );
-
+            await fetchData();
+            currentCompanyName.value = allUserData.value.find((datas) => { 
+              return datas.companyId == myId.value
+          });
           }
         }
       });
@@ -183,7 +176,6 @@ export default {
         querySnapshot.forEach((doc) => {
           slipsList.value.push(doc.data());
         });
-        //console.log("Slips List: ",slipsList.value)
         //Users/Company
         const companyQuery = query(collection(db, "companyInfo"));
         const compQuerrySnapshot = await getDocs(companyQuery);
@@ -195,7 +187,7 @@ export default {
             companyName: value.data().companyName,
             companyId: value.data().id,
           });
-         
+
         });
         if (!isUser.value) {
           companyList.value = allUserData.value;
@@ -205,10 +197,9 @@ export default {
       };
 
       const fetchUserData = () => {
-        companyList.value = allUserData.value.filter((user) => {
-          user.companyId == myId.value;
-        });
-        console.log("complist", companyList.value);
+        slipsList.value = slipsList.value.filter((data) => 
+          data.id == myId.value
+        )
       };
     });
 
@@ -220,18 +211,18 @@ export default {
       console.log("şu şirket filtrelendi: ", selectedCompany.value);
       const q = query(
         collection(db, "infos"),
-        where("id", "==", selectedCompany.value.cId)
+        // where("id", "==", selectedCompany.value.cId)
       );
-      await getDocs(q).then((querySnapshot) => {
-        querySnapshot.forEach(() => {
-          slipsList.value = [];
-        });
-      });
+      slipsList.value = [];
+
       await getDocs(q).then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           slipsList.value.push(doc.data());
         });
       });
+      slipsList.value = slipsList.value.filter((slip) => 
+      slip.id == selectedCompany.value.cId)
+      console.log('slipslist:',slipsList);
     };
 
     const handleClick = (myId) => {
