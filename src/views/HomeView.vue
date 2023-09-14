@@ -10,7 +10,6 @@
         ">
         <p>Hoş geldiniz</p>
         <p v-if="currentCompanyName != 'ADMIN'"><strong>{{ currentCompanyName.companyName }}</strong></p>
-        <p v-else><strong>{{ currentCompanyName }}</strong></p>
       </div>
       <TfSplitButtonView v-if="!isSearchMode" label="Fiş Ekle" icon="pi pi-plus" :model="splitMenu" @click="addReceipt" />
       <div v-else style="
@@ -32,6 +31,7 @@
       <list-component :slipsList="slipsList" @itemClick="handleClick">
         <!-- Slipslist ismi değişebilir-->
       </list-component>
+      <br>
     </div>
   </div>
 </template>
@@ -278,7 +278,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #homeViewContainer {
   background-color: #64ccc5;
   display: flex;

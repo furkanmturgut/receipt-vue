@@ -65,7 +65,7 @@ export default {
         }).catch((err) => {
           if (err.message) {
             e.value = true;
-            error.value = "Email veya parola hatalı"
+            error.value = "Email veya parola hatalı dfsssssssssssssss"
             const passError = "Firebase: Error (auth/wrong-password).";
             if (passError == err.message) {
               error.value = "Parola hatalı";
@@ -113,12 +113,4 @@ h3 {
   justify-content: center;
 }
 
-.p-password {
-  display: flex;
-  justify-content: center;
-}
-
-.p-password>input {
-  min-width: 300px;
-}
 </style>

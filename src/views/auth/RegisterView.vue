@@ -3,24 +3,32 @@
     <h3 style="display: flex; justify-content: center">Üye Ol</h3>
     <form @submit.prevent="handleRegister">
       <label>E-Mail Adres</label>
-      <TfInputView v-model="enteredMail" placeholder="E-mail Adresi Giriniz" @focus="clearInput" />
+      <TfInputView v-model="enteredMail" placeholder="E-mail Adresi Giriniz" @focus="clearInput"
+        @input="formValidation(0)" />
+      <TfInlineMessage class="inlineMsg" v-if="e.email">{{ error.email }}</TfInlineMessage>
 
       <label>Parola</label>
-      <TfPasswordView type="password" v-model="enteredPass" placeholder="Parola Belirleyin" toggleMask @focus="clearInput" />
+      <TfPasswordView :feedback="false" class="inputPassword" v-model="enteredPass" placeholder="Parola Belirleyin"
+        toggleMask @focus="clearInput" @input="formValidation(1)" />
+      <TfInlineMessage class="inlineMsg" v-if="e.password">{{ error.password }}</TfInlineMessage>
 
       <label>Firma Adı</label>
-      <TfInputView type="text" v-model="enteredCompanyName" placeholder="Turkuvaz İnovasyon A.Ş." @focus="clearInput" />
+      <TfInputView type="text" v-model="enteredCompanyName" placeholder="Turkuvaz İnovasyon A.Ş." @focus="clearInput"
+        @input="formValidation(2)" />
+      <TfInlineMessage class="inlineMsg" v-if="e.name">{{ error.name }}</TfInlineMessage>
 
       <label>Firma İletişim (+90)</label>
       <TfInputMaskView v-model="enteredCompanyPhone" date="phone" mask="(999) 999-9999" placeholder="5XX XXX XXXX"
-        @focus="clearInput" />
+        @focus="clearInput" :filled="formValidation(3)" />
+      <TfInlineMessage class="inlineMsg" v-if="e.phone">{{ error.phone }}</TfInlineMessage>
 
       <label>Firma Adres</label>
-      <TfTextAreaView rows="4" type="text" v-model="enteredCompanyAddress" placeholder="Adres Giriniz"
-        @focus="clearInput" />
-      <TfButtonView type="submit" label="Kayıt Ol" />
+      <TfTextAreaView rows="4" type="text" v-model="enteredCompanyAddress" placeholder="Adres Giriniz" @focus="clearInput"
+        @input="formValidation(4)" />
+      <TfInlineMessage class="inlineMsg" v-if="e.address">{{ error.address }}</TfInlineMessage>
 
-      <TfInlineMessage v-if="e">{{ error }}</TfInlineMessage>
+      <TfButtonView type="submit" style="margin-top: 30px; margin-bottom: 30px;" label="Kayıt Ol" />
+      <TfToast />
 
     </form>
   </div>
@@ -31,6 +39,8 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { getFirestore, addDoc, collection } from "firebase/firestore";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { useToast } from 'primevue/usetoast';
+
 export default {
   setup() {
     const auth = getAuth();
@@ -40,75 +50,119 @@ export default {
     const enteredPass = ref(null);
     const enteredCompanyName = ref(null);
     const enteredCompanyAddress = ref(null);
-    const enteredCompanyPhone = ref(null);
-    const error = ref(null);
-    const e = ref(false)
+    const enteredCompanyPhone = ref('');
+    const error = ref({ email: null, password: null, name: null, phone: null, address: null, area: null });
+    const e = ref({ email: false, password: false, name: false, phone: false, address: false, area: false });
     const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+    const phoneRegex = /\(\d\d\d\)\s\d\d\d-\d\d\d\d/i;
+    const passRegex = /^(?!\s)(.{6,})(?<!\s)$/;
+    const companyRegex = /^(?!\s)(.{3,})(?<!\s)$/;
+    const addressRegex = /^(?!\s)(.{20,})(?<!\s)$/;
 
-    const clearInput = () => {
-      e.value = false
-    }
+    const toast = useToast();
+
+    const clearInput = (field) => {
+      e.value[field] = false;
+      error.value[field] = null;
+    };
 
     const handleRegister = () => {
-      if (emailRegex.test(enteredMail.value)) {
-        if (enteredPass.value.length >= 6) {
-          if (enteredCompanyName.value.length >= 4) {
-            if (enteredCompanyPhone.value.length >= 10) {
-              if (enteredCompanyAddress.value.length >= 20) {
-                createUserWithEmailAndPassword(auth, enteredMail.value, enteredPass.value)
-                  .then(() => {
-                    try {
-                      addDoc(collection(db, "companyInfo"), {
-                        id: auth.currentUser.uid,
-                        companyMail: enteredMail.value,
-                        companyName: enteredCompanyName.value,
-                        companyPhone: enteredCompanyPhone.value,
-                        companyAddress: enteredCompanyAddress.value,
-                      });
-                    } catch (err) {
-                      if (err.message) {
-                        e.value = true
-                        error.value = "Verileri kontrol ediniz";
-                      }
-                    }
-                    router.push({ name: "LoginView" });
-                  })
-                  .catch((err) => {
-                    if (err.message) {
-                      e.value = true
-                      const member = "Firebase: Error (auth/email-already-in-use).";
-                     if(member != null){
-                      error.value = "Bu email sisteme zaten kayıtlı";
-                      console.log(err.message)
-                     }else {
-                      error.value = "Lütfen tüm alanları doldurunuz"
-                     }
-                    }
-                  });
 
-              } else {
-                e.value = true;
-                error.value = "Adresi açıklayıcı tanımlak için en az 20 karakter giriniz"
+      if (emailRegex.test(enteredMail.value) && passRegex.test(enteredPass.value) && companyRegex.test(enteredCompanyName.value) && phoneRegex.test(enteredCompanyPhone.value) && addressRegex.test(enteredCompanyAddress.value)) {
+        createUserWithEmailAndPassword(auth, enteredMail.value, enteredPass.value)
+          .then(() => {
+            try {
+              addDoc(collection(db, "companyInfo"), {
+                id: auth.currentUser.uid,
+                companyMail: enteredMail.value,
+                companyName: enteredCompanyName.value,
+                companyPhone: enteredCompanyPhone.value,
+                companyAddress: enteredCompanyAddress.value,
+              });
+            } catch (err) {
+              if (err.message) {
+                e.value.email = true;
+                error.value.email = "Verileri kontrol ediniz";
               }
-            } else {
-              e.value = true;
-              error.value = "Geçerli bir telefon numarası giriniz"
             }
-          } else {
-            e.value = true;
-            error.value = "Şirket adını en az 5 karakter olacak şekikde giriniz"
-          }
-        } else {
-          e.value = true;
-          error.value = "En az 6 karakter parola belirleyin"
-        }
+            router.push({ name: "HomeView" });
+          })
+          .catch((err) => {
+            if (err.message) {
+              e.value.email = true;
+              const member = "Firebase: Error (auth/email-already-in-use).";
+              if (member == null) {
+                error.value.email = "Bu email sisteme zaten kayıtlı";
+                console.log(err.message);
+              } else {
+                error.value.email = "Lütfen tüm alanları doldurunuz";
+              }
+            }
+          });
       } else {
-        e.value = true;
-        error.value = "Email adresi geçersiz"
+        e.value.area = true;
+        error.value.area = "Tüm alanları doldurun"
+        clickToast(error.value.area)
       }
     };
+
+    const clickToast = (msg) => {
+      toast.add({ severity: 'warning', summary: 'Uyarı', detail: msg, life: 3000 });
+    }
+
+    const formValidation = (type) => {
+
+      switch (type) {
+        case 0:
+          if (emailRegex.test(enteredMail.value)) {
+            e.value.email = false;
+          } else {
+            error.value.email = "Geçerli eposta girin";
+            e.value.email = true
+          }
+          break;
+        case 1:
+          if (!enteredPass.value == '' && passRegex.test(enteredPass.value)) {
+            e.value.password = false
+          } else {
+            e.value.password = true
+            error.value.password = "En az 6 karakter ve boşluk içermeyecek şekilde parola belirleyin";
+          }
+          break
+        case 2:
+          if (!enteredCompanyName.value == '' && companyRegex.test(enteredCompanyName.value)) {
+            e.value.name = false
+          } else {
+            e.value.name = true
+            error.value.name = "En az 3 karakter olacak şekilde firma adı giriniz";
+
+          }
+          break;
+        case 3:
+          if (enteredCompanyPhone.value == '' || phoneRegex.test(enteredCompanyPhone.value)) {
+            e.value.phone = false;
+          } else {
+            error.value.phone = "İletişim numarasını eksiksiz doldurun";
+            e.value.phone = true
+          }
+          break;
+        case 4:
+          if (!enteredCompanyAddress.value == '' && addressRegex.test(enteredCompanyAddress.value)) {
+            e.value.address = false
+          } else {
+            error.value.address = "Açıklayıcı olması için en az 20 karakter ile adresi belirtin";
+            e.value.address = true
+          }
+          break;
+      }
+
+    }
+
     return {
       handleRegister,
+      clearInput,
+      formValidation,
+      clickToast,
       //
       enteredMail,
       enteredPass,
@@ -117,7 +171,6 @@ export default {
       enteredCompanyPhone,
       e,
       error,
-      clearInput
     };
   },
 };
@@ -126,22 +179,39 @@ export default {
 <style scoped>
 .container {
   background-color: #64ccc5;
-  min-height: 500px;
+  width: auto;
+  height: auto;
+  flex-direction: column;
 }
+
+label {
+  display: flex;
+  justify-content: center;
+  
+}
+
 h3 {
   display: flex;
   justify-content: center;
 }
+
 form {
   gap: 5px;
   padding: 0;
   margin: 0;
-  display: grid;
-  grid-column: 1fr;
-  justify-content: center;
-}
-form>* {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+
+}
+
+form>* {
+  min-width: 230px;
+}
+
+
+.inlineMsg {
+  max-width: 230px;
 }
 </style>

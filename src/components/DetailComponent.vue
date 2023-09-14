@@ -31,7 +31,6 @@
                 <TfInputView id="dateInput" :value="!isUpdate ? item.receiptDate : dates" v-model="dates" @input="emitDate"
                   min="2000-01-01" :max="todayDate" type="date" :disabled="!isUpdate" onkeydown="return false" />
               </span>
-              <TfInlineMessage v-if="e">{{ error }}</TfInlineMessage>
               <TfToast />
               <TfConfirmDialog />
             </div>
@@ -58,12 +57,14 @@
           </div>
           <!-- Edit buttons end-->
         </div>
-        <!-- bottomList end -->
+        <!-- bottomList end --> <br>
       </div>
       <!-- class: row end -->
+
     </template>
   </div>
-
+  
+  <!-- TRY ICON-->
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <link rel="stylesheet"
@@ -200,7 +201,7 @@ img {
   width: 21rem !important;
 }
 
-#dateInput   {
+#dateInput {
   width: 200px;
 }
 

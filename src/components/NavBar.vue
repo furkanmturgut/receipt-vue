@@ -1,5 +1,6 @@
 <template>
-  <div class="navbar">
+  <div class="container">
+    <div class="navbar">
     <nav>
       <img
         src="@/assets/maviLogo.jpeg"
@@ -25,6 +26,8 @@
       </div>
     </nav>
   </div>
+  </div>
+  
 </template>
 
 <script>
@@ -63,18 +66,15 @@ export default {
 </script>
 
 <style scoped>
-button.p-button.p-component.p-splitbutton-defaultbutton {
-  padding: 7px 60px;
-}
+
+
 nav {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 15px;
-  margin: 0 auto;
   padding: 16px 10px;
-  border-radius: 7px;
   background: linear-gradient(to bottom, #a1f3ee, #61bdf3);
 }
 nav > .noUser {

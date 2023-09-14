@@ -25,4 +25,5 @@ export default {
 * {
   font-family: 'PT Sans', sans-serif;
 }
+
 </style>

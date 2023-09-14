@@ -7,9 +7,15 @@ import ReceiptDetailView from "../views/ReceiptDetailView.vue";
 import ErrorComponent from "../components/ErrorComponent.vue";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import ResetPassword from '../views/auth/ResetPassword.vue'
+import CopyDemo from '../views/CopyDemo.vue'
 
 const routes = [
-
+  {
+    path: "/copy",
+    component: CopyDemo,
+    name: "copy",
+    meta: { requiresAuth: true },
+  },
   {
     path: "/login",
     component: LoginView,
