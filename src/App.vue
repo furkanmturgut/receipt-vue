@@ -24,6 +24,8 @@ export default {
 
 * {
   font-family: 'PT Sans', sans-serif;
+  box-sizing: border-box;
 }
+
 
 </style>

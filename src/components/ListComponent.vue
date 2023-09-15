@@ -3,8 +3,6 @@
     <template #title>Fiş Tarihi: {{ receipt.receiptDate }}</template>
     <template #subtitle> Ödeme Yöntemi: {{ receipt.paymentMethod }} </template>
     <template #content> Ödeme Tutarı: {{ receipt.price }} TL </template>
-
-    <!-- <template #content> Ödeme Tutarı: {{ receipt.price }}TL </template> -->
     <template #footer>
       <div
         style="
@@ -25,21 +23,18 @@
 </template>
 
 <script>
-import { ref } from "vue";
 export default {
   props: ["slipsList"],
-  emits: ["itemClick", "deleteClick"],
+  emits: ["itemClick"],
 
   setup(props, { emit }) {
-    const id = ref(null);
     /*
     receipt.slipsId'yi id adında bir değişkene atamadan önce receipt değişkenini tanımlamanız gerekiyor. 
     Ayrıca, receipt'ı v-for döngüsünün içinde tanımladığınız için, setup içinde bu değişkeni kullanabilmek için
     önce ref veya reactive gibi reaktif bir değişken olarak tanımlamanız gerekebilir.
     */
     const handleClick = (slipsId) => {
-      id.value = slipsId;
-      emit("itemClick", id.value);
+      emit("itemClick", slipsId);
     };
 
     return { handleClick };

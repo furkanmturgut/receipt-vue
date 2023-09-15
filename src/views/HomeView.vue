@@ -31,6 +31,8 @@
       <list-component :slipsList="slipsList" @itemClick="handleClick">
         <!-- Slipslist ismi değişebilir-->
       </list-component>
+      <h3 v-show="errorState">{{ errorMessage }}</h3>
+
       <br>
     </div>
   </div>
@@ -70,6 +72,8 @@ export default {
     const selectedCompany = vueRef("");
     const isSearchMode = vueRef(false);
     const isLoading = vueRef(true);
+    const errorMessage = vueRef(null)
+    const errorState = vueRef(false)
 
     const sortByTime = async (type) => {
       const q = query(collection(db, "infos"), orderBy("receiptDate", type));
@@ -124,9 +128,9 @@ export default {
           if (isUser.value == true) {
             console.log("Kullanıcım Girişi");
             await fetchData();
-            currentCompanyName.value = allUserData.value.find((datas) => { 
+            currentCompanyName.value = allUserData.value.find((datas) => {
               return datas.companyId == myId.value
-          });
+            });
           }
         }
       });
@@ -189,7 +193,7 @@ export default {
           });
 
         });
-        
+
         if (!isUser.value) {
           companyList.value = allUserData.value;
         } else {
@@ -198,13 +202,13 @@ export default {
       };
 
       const fetchUserData = () => {
-       
-        if(slipsList.value.length<=0){
+
+        if (slipsList.value.length <= 0) {
           console.log("Hata")
-        }else {
-          slipsList.value = slipsList.value.filter((data) => 
-          data.id == myId.value
-        )
+        } else {
+          slipsList.value = slipsList.value.filter((data) =>
+            data.id == myId.value
+          )
         }
       };
     });
@@ -217,7 +221,6 @@ export default {
       console.log("şu şirket filtrelendi: ", selectedCompany.value);
       const q = query(
         collection(db, "infos"),
-        // where("id", "==", selectedCompany.value.cId)
       );
       slipsList.value = [];
 
@@ -226,9 +229,17 @@ export default {
           slipsList.value.push(doc.data());
         });
       });
-      slipsList.value = slipsList.value.filter((slip) => 
-      slip.id == selectedCompany.value.cId)
-      console.log('slipslist:',slipsList);
+      slipsList.value = slipsList.value.filter((slip) =>
+        slip.id == selectedCompany.value.cId)
+      //console.log('slipslist:', slipsList);
+      console.log("L:",slipsList.value.length)
+      if (slipsList.value.length <= 0) {
+        errorState.value = true
+        errorMessage.value = "Veri bulunamadı..."
+      } else {
+        errorState.value = false
+
+      }
     };
 
     const handleClick = (myId) => {
@@ -242,6 +253,14 @@ export default {
       isSearchMode.value = false;
       searchText.value = "";
       //FILTRELEMEYI SIFIRLA
+      console.log("ERROR STATE:",errorState.value)
+      if(errorState.value == true){
+        errorMessage.value = null
+        sortByTime()
+      }
+    
+   
+
     };
 
     const autoCompSearch = (event) => {
@@ -273,6 +292,8 @@ export default {
       isSearchMode,
       isUser,
       isLoading,
+      errorMessage,
+      errorState
     };
   },
 };

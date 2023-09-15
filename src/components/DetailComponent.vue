@@ -1,12 +1,15 @@
 <template>
-  <div class="flex justify-content-center">
+  <div class="flex justify-content-center " style="background-color:#64ccc5;">
     <template v-for="item in detailList" :key="item.id">
       <div>
         <div id="images">
-          <img class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="`${item.bilUrl}`"
-            :alt="item.id" max-width="500px" width="auto" />
-          <img class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="`${item.slipsUrl}`"
-            :alt="item.id" max-width="500px" />
+
+          <h3>FATURA</h3>
+          <img id="billURL" class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="item.bilUrl"
+          :alt="item.id" max-width="500px" width="auto">
+          <h3 v-show="item.slipsUrl != '' ">SLIP</h3>
+          <img v-if="item.slipsUrl != '' " id="slipsURL" class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="item.slipsUrl"
+            :alt="item.id" max-width="500px">
         </div>
         <!-- images end -->
         <div id="bottomList" style="display: grid; grid-template-columns: 1fr 1rem 5rem">
@@ -21,15 +24,16 @@
             <div id="methodData" style="display: -webkit-inline-box">
               <i class="pi pi-wallet" style="margin-right: 0.5rem"></i>
               <span class="font-semibold" style="max-width: auto;">
-                <TfInputView :value="!isUpdate ? item.paymentMethod : payMethods" v-model="payMethods"  onkeydown="return false" 
-                  :disabled="!isUpdate" />
+                <TfInputView :value="!isUpdate ? item.paymentMethod : payMethods" v-model="payMethods"
+                  onkeydown="return false" :disabled="!isUpdate" />
               </span>
             </div>
             <div id="dateData">
               <i class="pi pi-calendar" style="padding-right: 7px;"></i>
               <span class="font-semibold" style="max-width: auto;">
-                <TfInputView id="dateInput" :value="!isUpdate ? item.receiptDate : dates" v-model="dates" @input="emitDate"
-                  min="2000-01-01" :max="todayDate" type="date" :disabled="!isUpdate" onkeydown="return false" />
+                <TfInputView id="dateInput" :value="!isUpdate ? item.receiptDate : dates" v-model="dates"
+                  @input="emitDate" min="2000-01-01" :max="todayDate" type="date" :disabled="!isUpdate"
+                  onkeydown="return false" />
               </span>
               <TfToast />
               <TfConfirmDialog />
@@ -53,17 +57,20 @@
             <TfButtonView icon="pi pi-file-edit" severity="warning" rounded @click="updateClick(item)" />
             <TfButtonView icon="pi pi-times" severity="danger" rounded @click="deleteClick(item.slipsId)" />
             <TfButtonView icon="pi pi-check" severity="success" rounded @click="saveItem(item.slipsId)"
-              :disabled="!isUpdate" />
+              :disabled="!e ? !isUpdate : e" />
           </div>
           <!-- Edit buttons end-->
         </div>
         <!-- bottomList end --> <br>
+        <TfInlineMessage  style="margin-bottom: 20px; max-width: 230px; flex-wrap: wrap; flex-direction: row;  text-align: center;" v-if="e">{{ error }}</TfInlineMessage>
+
       </div>
       <!-- class: row end -->
 
     </template>
+
   </div>
-  
+
   <!-- TRY ICON-->
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -204,6 +211,4 @@ img {
 #dateInput {
   width: 200px;
 }
-
-
 </style>

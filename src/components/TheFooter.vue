@@ -7,16 +7,20 @@
             <div class="social">
                 <h3>Sosyal Ağlar</h3>
                 <div class="socialMedia">
-                    <a href="#" target="_blank"><i class="pi pi-instagram">Instagram</i></a>
+                    <a href="#" target="_blank"></a>
+                    <i class="pi pi-instagram"> Instagram</i>
                 </div>
                 <div class="socialMedia">
-                    <a href="#" target="_blank"><i class="pi pi-facebook">Facebook</i></a>
+                    <a href="#" target="_blank"></a>
+                    <i class="pi pi-facebook"> Facebook</i>
                 </div>
                 <div class="socialMedia">
-                    <a href="#" target="_blank"><i class="pi pi-linkedin">Linkedin</i></a>
+                    <a href="#" target="_blank"></a>
+                    <i class="pi pi-linkedin"> Linkedin</i>
                 </div>
                 <div class="socialMedia">
-                    <a href="#" target="_blank"><i class="pi pi-globe">Web Sitemiz</i></a>
+                    <a href="#" target="_blank"></a>
+                    <i class="pi pi-globe"> Web Sitemiz</i>
                 </div>
 
             </div>
@@ -29,15 +33,15 @@
             <div class="contact">
                 <h3>İletişim</h3>
                 <div class="contactList">
-                    <a href="#"><i class="pi pi-phone">555-555-5555</i></a>
+                    <a href="#"><i class="pi pi-phone"> 555-555-5555</i></a>
                 </div>
 
                 <div class="contactList">
-                    <a href="#"><i class="pi pi-envelope">deneme@deneme.com</i></a>
+                    <a href="#"><i class="pi pi-envelope"> deneme@deneme.com</i></a>
                 </div>
 
                 <div class="contactList">
-                    <a href="#"><i class="pi pi-map-marker">Teknopark</i></a>
+                    <a href="#"><i class="pi pi-map-marker"> Teknopark</i></a>
                 </div>
             </div>
 
@@ -49,7 +53,7 @@
     </div>
 </template>
 
-<script>
+<script scoped>
 export default {
 
 }
@@ -79,35 +83,36 @@ footer {
 .social {
     position: absolute;
     right: 10%;
-
+    
 }
-
 .socialMedia {
     display: flex;
-    align-items: start;
+    align-items: center;
     text-align: center;
-    padding: 3px;
+    flex-direction: row;
+    height: 25px;
 
 }
 
 a {
-    text-align: center;
     text-decoration: none;
-    color: #fff;
-
+    color: #fff;   
 }
 
 i {
     color: #fff;
+    cursor: pointer;
     margin: 5px;
+    font-size: 15px;
+    vertical-align: middle;
 }
 
 i:hover {
     color: #FFAC1C;
 }
-
 .contact{
     position: absolute;
     right: 25%;
 }
+
 </style>

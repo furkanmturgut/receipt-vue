@@ -1,7 +1,8 @@
 <template>
-  <div class="container">
-    <h3 style="display: flex; justify-content: center">Üye Ol</h3>
+  <div class="flex justify-content-center" style="background-color:#63ccc5">
     <form @submit.prevent="handleRegister">
+      <h3>Üye Ol</h3>
+
       <label>E-Mail Adres</label>
       <TfInputView v-model="enteredMail" placeholder="E-mail Adresi Giriniz" @focus="clearInput"
         @input="formValidation(0)" />
@@ -177,22 +178,13 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  background-color: #64ccc5;
-  width: auto;
-  height: auto;
-  flex-direction: column;
-}
 
-label {
-  display: flex;
-  justify-content: center;
-  
-}
+
 
 h3 {
   display: flex;
   justify-content: center;
+  
 }
 
 form {
@@ -213,5 +205,6 @@ form>* {
 
 .inlineMsg {
   max-width: 230px;
+  text-align: center;
 }
 </style>

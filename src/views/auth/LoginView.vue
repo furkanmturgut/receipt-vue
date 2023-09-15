@@ -1,9 +1,8 @@
 <template>
-  <div class="container">
-    <h3 style="display: flex; justify-content: center">Giriş Yap</h3>
+  <div class="container" style="background-color: #63ccc5;">
     <form @submit.prevent="handleLogin">
+      <h3>Giriş Yap</h3>
       <label>E-Mail Adres</label>
-
       <span class="p-input-icon-right">
         <i class="pi pi-at"></i>
         <TfInputView v-model="enteredMail" placeholder="Email gir" @focus="clearError" @input="formValidations()" />
@@ -14,7 +13,7 @@
 
         <router-link :to="{name:'ResetPassword'}">Parolamı unuttum?</router-link>
 
-      <TfButtonView type="submit" label="Giriş Yap" />
+      <TfButtonView style="margin-bottom: 20px;" type="submit" label="Giriş Yap" />
 
     </form>
     <div style="display: flex; justify-content: center; margin-top: 20px;">

@@ -23,8 +23,6 @@ export default {
     setup() {
         //Firebase
         const auth = getAuth();
-        // FirebaseError: Firebase: Error (auth/too-many-requests).
-        //FirebaseError: Firebase: Error(auth/user-not-found). 
         //Input 
         const errorMessage = ref(null);
         const errorState = ref(false);
