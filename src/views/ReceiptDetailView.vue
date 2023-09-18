@@ -67,7 +67,7 @@ export default {
         const firstUpdate = {
           paymentMethod: updatePayMethod.value,
           receiptDate: upDate.value,
-          price: updatePrice.value,
+          price: Number(updatePrice.value)
         };
         isLoading.value = false
 

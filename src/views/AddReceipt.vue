@@ -151,6 +151,7 @@
         label="Kaydet"
       />
       <TfInlineMessage v-if="hasError">{{ error }}</TfInlineMessage>
+      <br>
     </form>
   </div>
 </template>
@@ -352,7 +353,7 @@ export default {
       if (photoPng1.value) {
         if (dateRegex.test(dateInput.value)) {
           const payment = paymentPrice.value;
-          if (!Math.floor(payment / 10 ** 9)) {
+          if (payment >0 && payment <= 9000) {
             if (paymentMethod.value != null) {
               try {
                 const id = Date.now();
@@ -377,7 +378,7 @@ export default {
                   slipsId: random,
                   bilUrl: downloadURL1,
                   slipsUrl: downloadURL2 || "",
-                  price: paymentPrice.value,
+                  price: Number(paymentPrice.value),
                   receiptDate: dateInput.value,
                   paymentMethod: paymentMethod.value,
                   uploadDate: serverTimestamp(),
@@ -394,7 +395,7 @@ export default {
           } else {
             hasError.value = true;
             error.value =
-              "En fazla 1.000.000.000 (Bir Milyar) TL tutar girilebilir.";
+              "En fazla 9.000 (Dokuz Bin) TL tutar girilebilir.";
           }
         } else {
           hasError.value = true;
@@ -402,7 +403,7 @@ export default {
         }
       } else {
         hasError.value = true;
-        error.value = "Kamera ile gerekli görselleri ekleyin.";
+        error.value = "Kamera ile gerekli görseli ekleyin.";
       }
     };
 

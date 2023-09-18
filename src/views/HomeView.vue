@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container" id="homeViewContainer">
+    <div v-if="!isLoading" class="container" id="homeViewContainer">
       <div id="welcomeText" style="
           display: flex;
           align-content: center;
@@ -9,7 +9,8 @@
           flex-wrap: wrap;
         ">
         <p>Hoş geldiniz</p>
-        <p v-if="currentCompanyName != 'ADMIN'"><strong>{{ currentCompanyName.companyName }}</strong></p>
+          <p ><strong>{{ currentCompanyName.companyName ? currentCompanyName.companyName  :'ADMIN' }}</strong></p>
+
       </div>
       <TfSplitButtonView v-if="!isSearchMode" label="Fiş Ekle" icon="pi pi-plus" :model="splitMenu" @click="addReceipt" />
       <div v-else style="
@@ -76,7 +77,8 @@ export default {
     const errorState = vueRef(false)
 
     const sortByTime = async (type) => {
-      const q = query(collection(db, "infos"), orderBy("receiptDate", type));
+      const q = query(collection(db, "infos"),
+       orderBy("receiptDate", type));
       /// listeyi boşalttık
       await getDocs(q).then((querySnapshot) => {
         querySnapshot.forEach(() => {
@@ -85,9 +87,18 @@ export default {
       });
       // listeyi doldur
       await getDocs(q).then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          slipsList.value.push(doc.data());
-        });
+        let fullArray = [];
+          querySnapshot.forEach((doc)=> {
+              fullArray.push(doc.data());
+          });
+        if(isUser.value){
+          slipsList.value = fullArray.filter((item)=> {
+            return item.id === myId.value;
+
+          })
+        }else {
+          slipsList.value = fullArray
+        }  
       });
     };
 
@@ -99,9 +110,22 @@ export default {
       slipsList.value = [];
       // listeyi doldur
       await getDocs(q).then((querySnapshot) => {
+        let fullArray = [];
         querySnapshot.forEach((doc) => {
-          slipsList.value.push(doc.data());
+          fullArray.push(doc.data());
         });
+        if(isUser.value){
+          slipsList.value = fullArray.filter((item)=> {
+            return item.id === myId.value;
+          });
+         if(slipsList.value.length <=0) {
+            errorState.value = true;
+            errorMessage.value = "Veri bulunamadı..."
+         } 
+
+        }else {
+          slipsList.value = fullArray
+        }
       });
     };
 
@@ -147,7 +171,8 @@ export default {
           label: "Önce en eski",
           icon: "pi pi-sort-numeric-down",
           command: () => {
-            sortByTime("asc");
+           sortByTime("asc");
+           
           },
         },
         {
@@ -204,7 +229,8 @@ export default {
       const fetchUserData = () => {
 
         if (slipsList.value.length <= 0) {
-          console.log("Hata")
+            //BAKILACAK
+            console.log("Hata...")
         } else {
           slipsList.value = slipsList.value.filter((data) =>
             data.id == myId.value
@@ -259,8 +285,6 @@ export default {
         sortByTime()
       }
     
-   
-
     };
 
     const autoCompSearch = (event) => {

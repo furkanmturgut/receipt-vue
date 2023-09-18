@@ -17,7 +17,7 @@
             <div id="priceData">
               <span class="material-symbols-outlined">currency_lira</span>
               <span class="font-semibold" style="max-width: auto;">
-                <TfInputView :value="!isUpdate ? item.price : itemPrices" v-model="itemPrices" type="number"
+                <TfInputView :value="!isUpdate ? item.price.toString().replace(/(\d)(?=(\d{3})+$)/g, '$1'+'.') : itemPrices" v-model="itemPrices" type="number"
                   @input="emitPrice" :disabled="!isUpdate" @focus="clearInput" />
               </span>
             </div>
@@ -33,7 +33,7 @@
               <span class="font-semibold" style="max-width: auto;">
                 <TfInputView id="dateInput" :value="!isUpdate ? item.receiptDate : dates" v-model="dates"
                   @input="emitDate" min="2000-01-01" :max="todayDate" type="date" :disabled="!isUpdate"
-                  onkeydown="return false" />
+                   />
               </span>
               <TfToast />
               <TfConfirmDialog />
@@ -99,7 +99,7 @@ export default {
     const dates = ref("");
     const error = ref(null);
     const e = ref(false);
-
+    const priceValues = ref(null);
     //Date Validation
     const date = new Date();
     const year = date.getFullYear();
@@ -138,12 +138,14 @@ export default {
       });
     };
 
+
     const updateClick = (item) => {
       userId.value = item.id;
       isUpdate.value = !isUpdate.value;
       dates.value = item.receiptDate;
       payMethods.value = item.paymentMethod;
       itemPrices.value = item.price;
+      
 
       emitPayMetod(payMethods.value);
       emitDate();
@@ -159,13 +161,15 @@ export default {
     };
     const emitPrice = () => {
       const payment = itemPrices.value;
-      if (!Math.floor(payment / 10 ** 9)) {
+      if (Number(payment) > 0 && Number(payment)<= 9000) {
+          console.log("Gelen veri :",payment)
+          console.log("Tipi: ",typeof payment)
         e.value = false
         emit("priceEmit", itemPrices);
       } else {
         e.value = true;
         error.value =
-          "En fazla 1.000.000.000 (Bir Milyar) TL tutar girilebilir";
+          "En fazla 9.000 (Dokuz Bin) TL tutar girilebilir";
       }
     };
 
@@ -198,6 +202,7 @@ export default {
       error,
       clearInput,
       todayDate,
+      priceValues
     };
   },
 };
