@@ -3,7 +3,6 @@
     <div v-if="isLoading" style="align-items: center; justify-content: center; display: flex;">
       <TfSpinner />
     </div>
-
     <detail-component v-else :detailList="detailList" @deleteClick="deleteItem" @updateClick="updateItem"
       @paymentEmit="handleChildPayMethod" @dateEmit="handleChildDate" @priceEmit="handleChildPrice">
     </detail-component>

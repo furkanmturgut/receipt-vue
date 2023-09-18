@@ -27,5 +27,8 @@ export default {
   box-sizing: border-box;
 }
 
+body {
+  margin: 0px !important;
+}
 
 </style>

@@ -14,12 +14,9 @@
         <router-link :to="{name:'ResetPassword'}">Parolamı unuttum?</router-link>
 
       <TfButtonView style="margin-bottom: 20px;" type="submit" label="Giriş Yap" />
-
     </form>
     <div style="display: flex; justify-content: center; margin-top: 20px;">
       <TfInlineMessage severity="info" v-if="e">{{ error }}</TfInlineMessage>
-
-
     </div>
   </div>
 </template>
@@ -95,6 +92,7 @@ form {
   align-content: center;
   gap: 10px;
   flex-wrap: wrap;
+  min-height: inherit;
 }
 
 form>label {
@@ -104,7 +102,7 @@ form>label {
 
 .container {
   background-color: #64ccc5;
-  min-height: 500px;
+  min-height: 70vh;
 }
 
 h3 {

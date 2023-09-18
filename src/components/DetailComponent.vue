@@ -3,11 +3,10 @@
     <template v-for="item in detailList" :key="item.id">
       <div>
         <div id="images">
-
-          <h3>FATURA</h3>
+          <h3 style="text-align: center;">FATURA</h3>
           <img id="billURL" class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="item.bilUrl"
           :alt="item.id" max-width="500px" width="auto">
-          <h3 v-show="item.slipsUrl != '' ">SLIP</h3>
+          <h3 style="text-align: center;" v-show="item.slipsUrl != '' ">SLIP</h3>
           <img v-if="item.slipsUrl != '' " id="slipsURL" class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="item.slipsUrl"
             :alt="item.id" max-width="500px">
         </div>
