@@ -329,7 +329,7 @@ export default {
   display: flex;
   gap: 15px;
   width: auto;
-  min-height: 400px;
+  min-height: 70vh;
   align-items: center;
   justify-content: flex-start;
   align-content: center;

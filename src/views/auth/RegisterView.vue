@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-content-center" style="background-color:#63ccc5">
+  <div class="flex justify-content-center" style="background-color:#63ccc5; min-height: 70vh;">
     <form @submit.prevent="handleRegister">
       <h3>Üye Ol</h3>
 
@@ -178,13 +178,9 @@ export default {
 </script>
 
 <style scoped>
-
-
-
 h3 {
   display: flex;
   justify-content: center;
-  
 }
 
 form {
@@ -195,14 +191,12 @@ form {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
+  min-height: inherit;
 }
 
 form>* {
   min-width: 230px;
 }
-
-
 .inlineMsg {
   max-width: 230px;
   text-align: center;
