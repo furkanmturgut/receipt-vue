@@ -76,7 +76,7 @@ export default {
 
     const handleChildPayMethod = (newMethod) => {
       updatePayMethod.value = newMethod.value;
-      console.log("Yeni ödeme şekli:", newMethod.value);
+      console.log("Yeni ödeme şekli:", newMethod.value.name);
     };
 
     const handleChildPrice = (newPrice) => {

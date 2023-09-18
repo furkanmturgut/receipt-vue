@@ -25,8 +25,9 @@
             <div id="methodData" style="display: -webkit-inline-box">
               <i class="pi pi-wallet" style="margin-right: 0.5rem"></i>
               <span class="font-semibold" style="max-width: auto; ">
-                <TfInputView class="inputWidth" :value="!isUpdate ? item.paymentMethod : payMethods" v-model="payMethods"
-                  onkeydown="return false" :disabled="!isUpdate" />
+                <TfDropdownView class="inputWidth" v-model="payMethods" :options="paymentList" optionLabel="name"
+                  placeholder="Seçiniz" :disabled="!isUpdate" @change="emitPayMetod">
+                </TfDropdownView>
               </span>
             </div>
             <div id="dateData" style="display: -webkit-inline-box">
@@ -35,25 +36,13 @@
                 <TfInputView class="inputWidth" :value="!isUpdate ? item.receiptDate : dates" v-model="dates"
                   @input="emitDate" min="2000-01-01" :max="todayDate" type="date" :disabled="!isUpdate" />
               </span>
+
               <TfToast />
               <TfConfirmDialog />
-              
             </div>
-            
+
           </div>
           <!-- dataInput end -->
-          <div id="methodChoose" class="p-field-radiobutton" style="
-              display: flex;
-              flex-direction: column;
-              gap: 0.05rem;
-              justify-content: center;
-              -webkit-transform-origin-x: 10px;
-            ">
-            <TfRadioView name="paymentOption" value="nakit" label="Nakit" v-model="payMethods"
-              @click="emitPayMetod('nakit')" :disabled="!isUpdate" />
-            <TfRadioView name="paymentOption" value="kart" label="Kart" v-model="payMethods" @click="emitPayMetod('kart')"
-              :disabled="!isUpdate" />
-          </div>
           <!-- choose method end -->
           <div id="editButtons" class="flex flex-column align-items-center justify-content-center gap-2">
             <TfButtonView icon="pi pi-file-edit" severity="warning" rounded @click="updateClick(item)" />
@@ -62,12 +51,15 @@
               :disabled="!e ? !isUpdate : e" />
           </div>
           <!-- Edit buttons end-->
-          <TfInlineMessage class="messageStyle" v-if="e">{{ error }}</TfInlineMessage>
-          <br>
         </div>
         <!-- bottomList end -->
+        <div>
+          <TfInlineMessage class="messageStyle" v-if="e">{{ error }}</TfInlineMessage>
+
+        </div>
       </div>
       <!-- class: row end -->
+
     </template>
   </div>
 
@@ -99,15 +91,21 @@ export default {
     const dates = ref("");
     const error = ref(null);
     const e = ref(false);
-    const priceValues = ref(null);
+    const year = ref('')
+
+    const paymentList = [
+      { name: "Nakit", value: "Nakit" },
+      { name: "Kredi Kartı", value: "Kredi Kartı" }
+    ];
+
     //Date Validation
     const date = new Date();
-    const year = date.getFullYear();
+    year.value = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
     const monthStr = month.toString();
     const zeroMonth = monthStr.padStart(2, "0");
-    const todayDate = `${year}-${zeroMonth}-${day}`;
+    const todayDate = `${year.value}-${zeroMonth}-${day}`;
 
     const deleteClick = (slipsId) => {
       confirm.require({
@@ -138,39 +136,40 @@ export default {
       });
     };
 
-
     const updateClick = (item) => {
       userId.value = item.id;
       isUpdate.value = !isUpdate.value;
       dates.value = item.receiptDate;
-      payMethods.value = item.paymentMethod;
+      payMethods.value = item.paymentMethod[0];
       itemPrices.value = item.price;
-
 
       emitPayMetod(payMethods.value);
       emitDate();
       emitPrice();
     };
 
-    const emitPayMetod = (selectedPayment) => {
-      payMethods.value = selectedPayment;
+    const emitPayMetod = () => {
       emit("paymentEmit", payMethods);
     };
+
     const emitDate = () => {
       const selectDate = dates.value;
-      console.log("Selected Date: ",selectDate);
-      console.log("SDate Typeof : ",typeof selectDate)
-      if(selectDate != "" && selectDate != null){
+      console.log("Selected Date: ", selectDate);
+      const enteredYear = parseInt(selectDate.substring(0, 4), 10);
+
+      console.log("SDate Typeof : ", typeof selectDate)
+      if (selectDate != "" && selectDate != null && year.value >= enteredYear && enteredYear >= 2000) {
         e.value = false;
         emit("dateEmit", dates);
-      }else {
+      } else {
         e.value = true;
-        error.value = "Lütfen geçerli bir tarih giriniz"
+        error.value = "Lütfen en geç bugünü içeren bir tarih giriniz"
       }
     };
+
     const emitPrice = () => {
       const payment = itemPrices.value;
-      if (Number(payment) > 0 && Number(payment) <= 9000) {
+      if (payment > 0 && payment <= 9000) {
         console.log("Gelen veri :", payment)
         console.log("Tipi: ", typeof payment)
         e.value = false
@@ -189,7 +188,7 @@ export default {
       router.push("/");
     };
 
-    
+
 
     return {
       deleteClick,
@@ -208,7 +207,7 @@ export default {
       e,
       error,
       todayDate,
-      priceValues
+      paymentList
     };
   },
 };
@@ -221,15 +220,17 @@ img {
 
 .inputWidth {
   width: 12.5rem;
-  
+
+}
+
+#bottomList {
+  margin-bottom: 15px;
 }
 
 .messageStyle {
-  margin-bottom: 20px;
   max-width: 12.5rem;
   text-align: center;
   margin-left: 2.3rem;
-  margin-top:10px
-  
+  margin-bottom: 15px;
 }
 </style>

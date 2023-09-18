@@ -3,153 +3,66 @@
     <form @submit.prevent="submitData">
       <TfToast />
       <h1 style="text-align: center">Ödeme Şekli</h1>
-      <div
-        style="flex-wrap: wrap; justify-content: center; column-gap: 25px"
-        class="flex"
-      >
+      <div style="flex-wrap: wrap; justify-content: center; column-gap: 25px" class="flex">
         <div class="flex align-items-center">
-          <TfRadioView v-model="paymentMethod" name="kart" value="kart" />
-          <label
-            for="kart"
-            style="font-size: 1.5rem; font-weight: bold"
-            class="ml-2"
-            >Kart</label
-          >
+          <TfRadioView v-model="paymentMethod" name="Kart" value="Kart" />
+          <label for="Kart" style="font-size: 1.5rem; font-weight: bold" class="ml-2">Kart</label>
         </div>
         <div class="flex align-items-center">
-          <TfRadioView v-model="paymentMethod" name="nakit" value="nakit" />
-          <label
-            for="nakit"
-            style="font-size: 1.5rem; font-weight: bold"
-            class="ml-2"
-            >Nakit</label
-          >
+          <TfRadioView v-model="paymentMethod" name="Nakit" value="Nakit" />
+          <label for="Nakit" style="font-size: 1.5rem; font-weight: bold" class="ml-2">Nakit</label>
         </div>
       </div>
       <!-- OdemeSekli/Fatura -->
       <div id="fatura">
         <h1 style="text-align: center">Fatura</h1>
-        <TfButtonView
-          class="openCamera"
-          :disabled="isCameraOn2"
-          @click="toggleCamera(0)"
-        >
+        <TfButtonView class="openCamera" :disabled="isCameraOn2" @click="toggleCamera(0)">
           {{ isCameraOn1 ? "Kamerayı Kapat" : "Kamerayı Aç" }}
         </TfButtonView>
-        <TfDropdownView
-          id="chooseCamera1"
-          v-if="isCameraOn1"
-          v-model="currentCamera"
-          :options="cameras"
-          optionValue="deviceId"
-          optionLabel="label"
-          placeholder="Kamera seçin"
-          @change="changeCamera(0)"
-        >
+        <TfDropdownView id="chooseCamera1" v-if="isCameraOn1" v-model="currentCamera" :options="cameras"
+          optionValue="deviceId" optionLabel="label" placeholder="Kamera seçin" @change="changeCamera(0)">
         </TfDropdownView>
-        <video
-          v-if="isCameraOn1"
-          ref="videoElement1"
-          muted
-          autoplay
-          controls
-          class="videoCam"
-        />
+        <video v-if="isCameraOn1" ref="videoElement1" muted autoplay controls class="videoCam" />
         <canvas ref="canvasElement1" style="display: none" />
-        <img
-          v-if="isPhotoTaken1 && !isCameraOn1"
-          alt="billPhoto"
-          :src="photoScreen1"
-          class="videoCam"
-        />
-        <TfButtonView
-          id="takePhotoBtn1"
-          v-if="isCameraOn1"
-          @click="takePhoto(0)"
-          style="
+        <img v-if="isPhotoTaken1 && !isCameraOn1" alt="billPhoto" :src="photoScreen1" class="videoCam" />
+        <TfButtonView id="takePhotoBtn1" v-if="isCameraOn1" @click="takePhoto(0)" style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          "
-          >📸</TfButtonView
-        >
+          ">📸</TfButtonView>
       </div>
       <!-- FATURA/SLİP -->
-      <div class="slip" v-if="paymentMethod == 'kart'">
+      <div class="slip" v-if="paymentMethod == 'Kart'">
         <h1 style="text-align: center">Slip</h1>
-        <TfButtonView
-          class="openCamera"
-          :disabled="isCameraOn1"
-          @click="toggleCamera(1)"
-        >
+        <TfButtonView class="openCamera" :disabled="isCameraOn1" @click="toggleCamera(1)">
           {{ isCameraOn2 ? "Kamerayı Kapat" : "Kamerayı Aç" }}
         </TfButtonView>
-        <TfDropdownView
-          id="chooseCamera2"
-          v-if="isCameraOn2"
-          v-model="currentCamera"
-          :options="cameras"
-          optionValue="deviceId"
-          optionLabel="label"
-          placeholder="Kamera seçin"
-          @change="changeCamera(1)"
-        >
+        <TfDropdownView id="chooseCamera2" v-if="isCameraOn2" v-model="currentCamera" :options="cameras"
+          optionValue="deviceId" optionLabel="label" placeholder="Kamera seçin" @change="changeCamera(1)">
         </TfDropdownView>
-        <video
-          v-if="isCameraOn2"
-          ref="videoElement2"
-          muted
-          autoplay
-          controls
-          class="videoCam"
-        />
+        <video v-if="isCameraOn2" ref="videoElement2" muted autoplay controls class="videoCam" />
         <canvas ref="canvasElement2" style="display: none" />
-        <img
-          v-if="isPhotoTaken2 && !isCameraOn2"
-          alt="slipPhoto"
-          :src="photoScreen2"
-          class="videoCam"
-        />
-        <TfButtonView
-          id="takePhotoBtn2"
-          v-if="isCameraOn2"
-          @click="takePhoto(1)"
-          style="
+        <img v-if="isPhotoTaken2 && !isCameraOn2" alt="slipPhoto" :src="photoScreen2" class="videoCam" />
+        <TfButtonView id="takePhotoBtn2" v-if="isCameraOn2" @click="takePhoto(1)" style="
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-          "
-          >📸</TfButtonView
-        >
+          ">📸</TfButtonView>
       </div>
       <!-- SLİP/TARİH -->
       <h1 style="text-align: center">Fatura Tarihi</h1>
 
-      <TfInputView
-        type="date"
-        v-model="dateInput"
-        :max="todayDate"
-        min="2000-01-01"
-        style="width: auto; height: 2rem"
-        @focus="clearInput"
-        onkeydown="return false"
-      />
+      <TfInputView type="date" v-model="dateInput" :max="todayDate" min="2000-01-01" style="width: auto; height: 2rem"
+        @focus="clearInput"  />
+     
       <!-- TARİH/TUTAR -->
       <h1 style="text-align: center">Tutar</h1>
-      <TfInputView
-        v-model="paymentPrice"
-        type="number"
-        placeholder="Ödeme Tutarı (TL)"
-        @focus="clearInput"
-      />
+      <TfInputView v-model="paymentPrice" type="number" placeholder="Ödeme Tutarı (TL)" @focus="clearInput" />
       <!-- Tutar/Kaydet -->
-      <TfButtonView
-        style="text-transform: uppercase; font-size: large margin-top: 30px; margin-bottom: 30px;"
-        type="submit"
-        label="Kaydet"
-      />
+      <TfButtonView style="text-transform: uppercase; font-size: large margin-top: 30px; margin-bottom: 30px;"
+        type="submit" label="Kaydet" />
       <TfInlineMessage v-if="hasError">{{ error }}</TfInlineMessage>
       <br>
     </form>
@@ -184,7 +97,6 @@ export default {
     const dateInput = ref(null);
     const paymentPrice = ref(null);
     const paymentMethod = ref(null);
-    const dateRegex = /^\d{4}\-\d{2}\-\d{2}$/;
     const hasError = ref(false);
     const error = ref(null);
     const currentCamera = ref();
@@ -200,6 +112,7 @@ export default {
     const isPhotoTaken2 = ref(false);
     const isCameraOn1 = ref(false);
     const isCameraOn2 = ref(false);
+    let year = ref('');
     const { videoInputs: cameras } = useDevicesList({
       requestPermissions: false,
     });
@@ -212,12 +125,12 @@ export default {
     const toast = useToast();
     //Date Validation
     const date = new Date();
-    const year = date.getFullYear();
+     year.value = date.getFullYear();
     const month = date.getMonth() + 1;
     const monthStr = month.toString();
     const zeroMonth = monthStr.padStart(2, "0");
     const day = date.getDate();
-    const todayDate = `${year}-${zeroMonth}-${day}`;
+    const todayDate = `${year.value}-${zeroMonth}-${day}`;
     const clearInput = () => {
       hasError.value = false;
     };
@@ -350,11 +263,20 @@ export default {
     };
 
     const submitData = async () => {
+      const selectDate = dateInput.value;
+      console.log("Add Date: ", selectDate);
+      const enteredYear = parseInt(selectDate.substring(0, 4), 10);
+
       if (photoPng1.value) {
-        if (dateRegex.test(dateInput.value)) {
+        if (selectDate != "" && selectDate != null && year.value >= enteredYear && enteredYear >= 2000) {
+          hasError.value = false
           const payment = paymentPrice.value;
-          if (payment >0 && payment <= 9000) {
+          if (payment > 0 && payment <= 9000) {
             if (paymentMethod.value != null) {
+              const paymentArray =
+                { name: paymentMethod.value, value: paymentMethod.value }
+
+              console.log("LENGTH: ", paymentMethod.value)
               try {
                 const id = Date.now();
                 const storageRef1 = FBref(storage, `infos/${id}`);
@@ -380,7 +302,7 @@ export default {
                   slipsUrl: downloadURL2 || "",
                   price: Number(paymentPrice.value),
                   receiptDate: dateInput.value,
-                  paymentMethod: paymentMethod.value,
+                  paymentMethod: paymentArray,
                   uploadDate: serverTimestamp(),
                 });
                 router.push({ name: "HomeView" });
