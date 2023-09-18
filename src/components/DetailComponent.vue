@@ -5,38 +5,41 @@
         <div id="images">
           <h3 style="text-align: center;">FATURA</h3>
           <img id="billURL" class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="item.bilUrl"
-          :alt="item.id" max-width="500px" width="auto">
-          <h3 style="text-align: center;" v-show="item.slipsUrl != '' ">SLIP</h3>
-          <img v-if="item.slipsUrl != '' " id="slipsURL" class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="item.slipsUrl"
-            :alt="item.id" max-width="500px">
+            :alt="item.id" max-width="500px" width="auto">
+          <h3 style="text-align: center;" v-show="item.slipsUrl != ''">SLIP</h3>
+          <img v-if="item.slipsUrl != ''" id="slipsURL"
+            class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="item.slipsUrl" :alt="item.id"
+            max-width="500px">
         </div>
         <!-- images end -->
-        <div id="bottomList" style="display: grid; grid-template-columns: 1fr 1rem 5rem">
+        <div id="bottomList" style="display: grid; grid-template-columns: 1fr 2rem 3rem">
           <div id="dataInputs" class="flex flex-column align-items-center justify-content-center gap-2">
             <div id="priceData">
               <span class="material-symbols-outlined">currency_lira</span>
               <span class="font-semibold" style="max-width: auto;">
-                <TfInputView :value="!isUpdate ? item.price.toString().replace(/(\d)(?=(\d{3})+$)/g, '$1'+'.') : itemPrices" v-model="itemPrices" type="number"
-                  @input="emitPrice" :disabled="!isUpdate" @focus="clearInput" />
+                <TfInputView class="inputWidth"
+                  :value="!isUpdate ? item.price.toString().replace(/(\d)(?=(\d{3})+$)/g, '$1' + '.') : itemPrices"
+                  v-model="itemPrices" type="number" @input="emitPrice" :disabled="!isUpdate" />
               </span>
             </div>
             <div id="methodData" style="display: -webkit-inline-box">
               <i class="pi pi-wallet" style="margin-right: 0.5rem"></i>
-              <span class="font-semibold" style="max-width: auto;">
-                <TfInputView :value="!isUpdate ? item.paymentMethod : payMethods" v-model="payMethods"
+              <span class="font-semibold" style="max-width: auto; ">
+                <TfInputView class="inputWidth" :value="!isUpdate ? item.paymentMethod : payMethods" v-model="payMethods"
                   onkeydown="return false" :disabled="!isUpdate" />
               </span>
             </div>
-            <div id="dateData">
-              <i class="pi pi-calendar" style="padding-right: 7px;"></i>
+            <div id="dateData" style="display: -webkit-inline-box">
+              <i class="pi pi-calendar" style="margin-right: 0.3rem;"></i>
               <span class="font-semibold" style="max-width: auto;">
-                <TfInputView id="dateInput" :value="!isUpdate ? item.receiptDate : dates" v-model="dates"
-                  @input="emitDate" min="2000-01-01" :max="todayDate" type="date" :disabled="!isUpdate"
-                   />
+                <TfInputView class="inputWidth" :value="!isUpdate ? item.receiptDate : dates" v-model="dates"
+                  @input="emitDate" min="2000-01-01" :max="todayDate" type="date" :disabled="!isUpdate" />
               </span>
               <TfToast />
               <TfConfirmDialog />
+              
             </div>
+            
           </div>
           <!-- dataInput end -->
           <div id="methodChoose" class="p-field-radiobutton" style="
@@ -59,15 +62,13 @@
               :disabled="!e ? !isUpdate : e" />
           </div>
           <!-- Edit buttons end-->
+          <TfInlineMessage class="messageStyle" v-if="e">{{ error }}</TfInlineMessage>
+          <br>
         </div>
-        <!-- bottomList end --> <br>
-        <TfInlineMessage  style="margin-bottom: 20px; max-width: 230px; flex-wrap: wrap; flex-direction: row;  text-align: center;" v-if="e">{{ error }}</TfInlineMessage>
-
+        <!-- bottomList end -->
       </div>
       <!-- class: row end -->
-
     </template>
-
   </div>
 
   <!-- TRY ICON-->
@@ -144,7 +145,7 @@ export default {
       dates.value = item.receiptDate;
       payMethods.value = item.paymentMethod;
       itemPrices.value = item.price;
-      
+
 
       emitPayMetod(payMethods.value);
       emitDate();
@@ -156,13 +157,22 @@ export default {
       emit("paymentEmit", payMethods);
     };
     const emitDate = () => {
-      emit("dateEmit", dates);
+      const selectDate = dates.value;
+      console.log("Selected Date: ",selectDate);
+      console.log("SDate Typeof : ",typeof selectDate)
+      if(selectDate != "" && selectDate != null){
+        e.value = false;
+        emit("dateEmit", dates);
+      }else {
+        e.value = true;
+        error.value = "Lütfen geçerli bir tarih giriniz"
+      }
     };
     const emitPrice = () => {
       const payment = itemPrices.value;
-      if (Number(payment) > 0 && Number(payment)<= 9000) {
-          console.log("Gelen veri :",payment)
-          console.log("Tipi: ",typeof payment)
+      if (Number(payment) > 0 && Number(payment) <= 9000) {
+        console.log("Gelen veri :", payment)
+        console.log("Tipi: ", typeof payment)
         e.value = false
         emit("priceEmit", itemPrices);
       } else {
@@ -179,9 +189,7 @@ export default {
       router.push("/");
     };
 
-    const clearInput = () => {
-      e.value = false;
-    };
+    
 
     return {
       deleteClick,
@@ -199,7 +207,6 @@ export default {
       //
       e,
       error,
-      clearInput,
       todayDate,
       priceValues
     };
@@ -212,7 +219,17 @@ img {
   width: 21rem !important;
 }
 
-#dateInput {
-  width: 200px;
+.inputWidth {
+  width: 12.5rem;
+  
+}
+
+.messageStyle {
+  margin-bottom: 20px;
+  max-width: 12.5rem;
+  text-align: center;
+  margin-left: 2.3rem;
+  margin-top:10px
+  
 }
 </style>
