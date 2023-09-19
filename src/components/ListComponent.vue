@@ -1,7 +1,7 @@
 <template>
   <TfCardView v-for="receipt in slipsList" :key="receipt.id">
     <template #title>Fiş Tarihi: {{ receipt.receiptDate }}</template>
-    <template #subtitle> Ödeme Yöntemi: {{ receipt.paymentMethod }} </template>
+    <template #subtitle> Ödeme Yöntemi: {{ receipt.paymentMethod.name}} </template>
     <template #content> Ödeme Tutarı: {{ receipt.price }} TL </template>
     <template #footer>
       <div

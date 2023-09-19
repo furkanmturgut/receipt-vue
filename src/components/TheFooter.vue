@@ -112,7 +112,7 @@ i:hover {
 }
 .contact{
     position: absolute;
-    right: 25%;
+    margin-left: 10px;
 }
 
 </style>

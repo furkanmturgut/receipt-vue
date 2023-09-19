@@ -14,10 +14,11 @@
         <router-link :to="{name:'ResetPassword'}">Parolamı unuttum?</router-link>
 
       <TfButtonView style="margin-bottom: 20px;" type="submit" label="Giriş Yap" />
-    </form>
-    <div style="display: flex; justify-content: center; margin-top: 20px;">
+      <div>
       <TfInlineMessage severity="info" v-if="e">{{ error }}</TfInlineMessage>
     </div>
+    </form>
+ 
   </div>
 </template>
 <script>
@@ -61,7 +62,7 @@ export default {
         }).catch((err) => {
           if (err.message) {
             e.value = true;
-            error.value = "Email veya parola hatalı dfsssssssssssssss"
+            error.value = "Email veya parola hatalı"
             const passError = "Firebase: Error (auth/wrong-password).";
             if (passError == err.message) {
               error.value = "Parola hatalı";

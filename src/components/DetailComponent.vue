@@ -5,52 +5,44 @@
         <div id="images">
           <h3 style="text-align: center;">FATURA</h3>
           <img id="billURL" class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="item.bilUrl"
-          :alt="item.id" max-width="500px" width="auto">
-          <h3 style="text-align: center;" v-show="item.slipsUrl != '' ">SLIP</h3>
-          <img v-if="item.slipsUrl != '' " id="slipsURL" class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="item.slipsUrl"
-            :alt="item.id" max-width="500px">
+            :alt="item.id" max-width="500px" width="auto">
+          <h3 style="text-align: center;" v-show="item.slipsUrl != ''">SLIP</h3>
+          <img v-if="item.slipsUrl != ''" id="slipsURL"
+            class="w:9 sm:w-25rem shadow-2 block xl:block mx-auto my-3 border-round" :src="item.slipsUrl" :alt="item.id"
+            max-width="500px">
         </div>
         <!-- images end -->
-        <div id="bottomList" style="display: grid; grid-template-columns: 1fr 1rem 5rem">
+        <div id="bottomList" style="display: grid; grid-template-columns: 1fr 2rem 3rem">
           <div id="dataInputs" class="flex flex-column align-items-center justify-content-center gap-2">
             <div id="priceData">
               <span class="material-symbols-outlined">currency_lira</span>
               <span class="font-semibold" style="max-width: auto;">
-                <TfInputView :value="!isUpdate ? item.price : itemPrices" v-model="itemPrices" type="number"
-                  @input="emitPrice" :disabled="!isUpdate" @focus="clearInput" />
+                <TfInputView class="inputWidth"
+                  :value="!isUpdate ? item.price.toString().replace(/(\d)(?=(\d{3})+$)/g, '$1' + '.') : itemPrices"
+                  v-model="itemPrices" type="number" @input="emitPrice" :disabled="!isUpdate" />
               </span>
             </div>
             <div id="methodData" style="display: -webkit-inline-box">
               <i class="pi pi-wallet" style="margin-right: 0.5rem"></i>
-              <span class="font-semibold" style="max-width: auto;">
-                <TfInputView :value="!isUpdate ? item.paymentMethod : payMethods" v-model="payMethods"
-                  onkeydown="return false" :disabled="!isUpdate" />
+              <span class="font-semibold" style="max-width: auto; ">
+                <TfDropdownView class="inputWidth" v-model="payMethods" :options="paymentList" optionLabel="name"
+                  placeholder="Seçiniz" :disabled="!isUpdate" @change="emitPayMetod">
+                </TfDropdownView>
               </span>
             </div>
-            <div id="dateData">
-              <i class="pi pi-calendar" style="padding-right: 7px;"></i>
+            <div id="dateData" style="display: -webkit-inline-box">
+              <i class="pi pi-calendar" style="margin-right: 0.3rem;"></i>
               <span class="font-semibold" style="max-width: auto;">
-                <TfInputView id="dateInput" :value="!isUpdate ? item.receiptDate : dates" v-model="dates"
-                  @input="emitDate" min="2000-01-01" :max="todayDate" type="date" :disabled="!isUpdate"
-                  onkeydown="return false" />
+                <TfInputView class="inputWidth" :value="!isUpdate ? item.receiptDate : dates" v-model="dates"
+                  @input="emitDate" min="2000-01-01" :max="todayDate" type="date" :disabled="!isUpdate" />
               </span>
+
               <TfToast />
               <TfConfirmDialog />
             </div>
+
           </div>
           <!-- dataInput end -->
-          <div id="methodChoose" class="p-field-radiobutton" style="
-              display: flex;
-              flex-direction: column;
-              gap: 0.05rem;
-              justify-content: center;
-              -webkit-transform-origin-x: 10px;
-            ">
-            <TfRadioView name="paymentOption" value="nakit" label="Nakit" v-model="payMethods"
-              @click="emitPayMetod('nakit')" :disabled="!isUpdate" />
-            <TfRadioView name="paymentOption" value="kart" label="Kart" v-model="payMethods" @click="emitPayMetod('kart')"
-              :disabled="!isUpdate" />
-          </div>
           <!-- choose method end -->
           <div id="editButtons" class="flex flex-column align-items-center justify-content-center gap-2">
             <TfButtonView icon="pi pi-file-edit" severity="warning" rounded @click="updateClick(item)" />
@@ -60,14 +52,15 @@
           </div>
           <!-- Edit buttons end-->
         </div>
-        <!-- bottomList end --> <br>
-        <TfInlineMessage  style="margin-bottom: 20px; max-width: 230px; flex-wrap: wrap; flex-direction: row;  text-align: center;" v-if="e">{{ error }}</TfInlineMessage>
+        <!-- bottomList end -->
+        <div>
+          <TfInlineMessage class="messageStyle" v-if="e">{{ error }}</TfInlineMessage>
 
+        </div>
       </div>
       <!-- class: row end -->
 
     </template>
-
   </div>
 
   <!-- TRY ICON-->
@@ -98,15 +91,21 @@ export default {
     const dates = ref("");
     const error = ref(null);
     const e = ref(false);
+    const year = ref('')
+
+    const paymentList = [
+      { name: "Nakit", value: "Nakit" },
+      { name: "Kredi Kartı", value: "Kredi Kartı" }
+    ];
 
     //Date Validation
     const date = new Date();
-    const year = date.getFullYear();
+    year.value = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
     const monthStr = month.toString();
     const zeroMonth = monthStr.padStart(2, "0");
-    const todayDate = `${year}-${zeroMonth}-${day}`;
+    const todayDate = `${year.value}-${zeroMonth}-${day}`;
 
     const deleteClick = (slipsId) => {
       confirm.require({
@@ -141,7 +140,7 @@ export default {
       userId.value = item.id;
       isUpdate.value = !isUpdate.value;
       dates.value = item.receiptDate;
-      payMethods.value = item.paymentMethod;
+      payMethods.value = item.paymentMethod[0];
       itemPrices.value = item.price;
 
       emitPayMetod(payMethods.value);
@@ -149,22 +148,36 @@ export default {
       emitPrice();
     };
 
-    const emitPayMetod = (selectedPayment) => {
-      payMethods.value = selectedPayment;
+    const emitPayMetod = () => {
       emit("paymentEmit", payMethods);
     };
+
     const emitDate = () => {
-      emit("dateEmit", dates);
+      const selectDate = dates.value;
+      console.log("Selected Date: ", selectDate);
+      const enteredYear = parseInt(selectDate.substring(0, 4), 10);
+
+      console.log("SDate Typeof : ", typeof selectDate)
+      if (selectDate != "" && selectDate != null && year.value >= enteredYear && enteredYear >= 2000) {
+        e.value = false;
+        emit("dateEmit", dates);
+      } else {
+        e.value = true;
+        error.value = "Lütfen en geç bugünü içeren bir tarih giriniz"
+      }
     };
+
     const emitPrice = () => {
       const payment = itemPrices.value;
-      if (!Math.floor(payment / 10 ** 9)) {
+      if (payment > 0 && payment <= 9000) {
+        console.log("Gelen veri :", payment)
+        console.log("Tipi: ", typeof payment)
         e.value = false
         emit("priceEmit", itemPrices);
       } else {
         e.value = true;
         error.value =
-          "En fazla 1.000.000.000 (Bir Milyar) TL tutar girilebilir";
+          "En fazla 9.000 (Dokuz Bin) TL tutar girilebilir";
       }
     };
 
@@ -175,9 +188,7 @@ export default {
       router.push("/");
     };
 
-    const clearInput = () => {
-      e.value = false;
-    };
+
 
     return {
       deleteClick,
@@ -195,8 +206,8 @@ export default {
       //
       e,
       error,
-      clearInput,
       todayDate,
+      paymentList
     };
   },
 };
@@ -207,7 +218,19 @@ img {
   width: 21rem !important;
 }
 
-#dateInput {
-  width: 200px;
+.inputWidth {
+  width: 12.5rem;
+
+}
+
+#bottomList {
+  margin-bottom: 15px;
+}
+
+.messageStyle {
+  max-width: 12.5rem;
+  text-align: center;
+  margin-left: 2.3rem;
+  margin-bottom: 15px;
 }
 </style>
