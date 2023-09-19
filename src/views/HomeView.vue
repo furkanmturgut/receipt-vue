@@ -204,6 +204,7 @@ export default {
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           slipsList.value.push(doc.data());
+          console.log(slipsList.value)
         });
         //Users/Company
         const companyQuery = query(collection(db, "companyInfo"));

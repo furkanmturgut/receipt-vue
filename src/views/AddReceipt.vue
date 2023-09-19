@@ -55,8 +55,8 @@
       <h1 style="text-align: center">Fatura Tarihi</h1>
 
       <TfInputView type="date" v-model="dateInput" :max="todayDate" min="2000-01-01" style="width: auto; height: 2rem"
-        @focus="clearInput"  />
-     
+        @focus="clearInput" />
+
       <!-- TARİH/TUTAR -->
       <h1 style="text-align: center">Tutar</h1>
       <TfInputView v-model="paymentPrice" type="number" placeholder="Ödeme Tutarı (TL)" @focus="clearInput" />
@@ -125,7 +125,7 @@ export default {
     const toast = useToast();
     //Date Validation
     const date = new Date();
-     year.value = date.getFullYear();
+    year.value = date.getFullYear();
     const month = date.getMonth() + 1;
     const monthStr = month.toString();
     const zeroMonth = monthStr.padStart(2, "0");
@@ -263,18 +263,19 @@ export default {
     };
 
     const submitData = async () => {
-      const selectDate = dateInput.value;
-      console.log("Add Date: ", selectDate);
-      const enteredYear = parseInt(selectDate.substring(0, 4), 10);
-
       if (photoPng1.value) {
-        if (selectDate != "" && selectDate != null && year.value >= enteredYear && enteredYear >= 2000) {
+        const selectDate = dateInput.value;
+        console.log("Add Date: ", selectDate);
+        if(selectDate != null && selectDate != ''){
+          const enteredYear = parseInt(selectDate.substring(0, 4), 10);
+          if (selectDate != "" && selectDate != null && year.value >= enteredYear && enteredYear >= 2000) {
           hasError.value = false
+        }
           const payment = paymentPrice.value;
           if (payment > 0 && payment <= 9000) {
             if (paymentMethod.value != null) {
               const paymentArray =
-                { name: paymentMethod.value, value: paymentMethod.value }
+                ({ name: paymentMethod.value, value: paymentMethod.value })
 
               console.log("LENGTH: ", paymentMethod.value)
               try {
