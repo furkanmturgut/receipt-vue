@@ -155,7 +155,6 @@ export default {
       if (videoElement2.value) {
         videoElement2.value.srcObject = stream.value;
       }
-      console.log("Watcher", stream.value);
     });
 
     const toggleCamera = async (which) => {
@@ -265,7 +264,6 @@ export default {
     const submitData = async () => {
       if (photoPng1.value) {
         const selectDate = dateInput.value;
-        console.log("Add Date: ", selectDate);
         if(selectDate != null && selectDate != ''){
           const enteredYear = parseInt(selectDate.substring(0, 4), 10);
           if (selectDate != "" && selectDate != null && year.value >= enteredYear && enteredYear >= 2000) {
@@ -277,7 +275,6 @@ export default {
               const paymentArray =
                 ({ name: paymentMethod.value, value: paymentMethod.value })
 
-              console.log("LENGTH: ", paymentMethod.value)
               try {
                 const id = Date.now();
                 const storageRef1 = FBref(storage, `infos/${id}`);

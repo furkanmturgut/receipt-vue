@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!isLoading" class="container" id="homeViewContainer">
+    <div class="container" id="homeViewContainer">
       <div id="welcomeText" style="
           display: flex;
           align-content: center;
@@ -143,14 +143,12 @@ export default {
           adminId.value.forEach((admins) => {
             if (myId.value === admins) {
               isUser.value = false;
-              console.log("Admin Girişi");
               currentCompanyName.value = "ADMIN";
               fetchData();
               return;
             }
           });
           if (isUser.value == true) {
-            console.log("Kullanıcım Girişi");
             await fetchData();
             currentCompanyName.value = allUserData.value.find((datas) => {
               return datas.companyId == myId.value
@@ -204,7 +202,6 @@ export default {
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           slipsList.value.push(doc.data());
-          console.log(slipsList.value)
         });
         //Users/Company
         const companyQuery = query(collection(db, "companyInfo"));
@@ -231,7 +228,6 @@ export default {
 
         if (slipsList.value.length <= 0) {
             //BAKILACAK
-            console.log("Hata...")
         } else {
           slipsList.value = slipsList.value.filter((data) =>
             data.id == myId.value
@@ -245,7 +241,6 @@ export default {
     };
 
     const filterCompany = async () => {
-      console.log("şu şirket filtrelendi: ", selectedCompany.value);
       const q = query(
         collection(db, "infos"),
       );
@@ -259,7 +254,6 @@ export default {
       slipsList.value = slipsList.value.filter((slip) =>
         slip.id == selectedCompany.value.cId)
       //console.log('slipslist:', slipsList);
-      console.log("L:",slipsList.value.length)
       if (slipsList.value.length <= 0) {
         errorState.value = true
         errorMessage.value = "Veri bulunamadı..."
@@ -280,7 +274,6 @@ export default {
       isSearchMode.value = false;
       searchText.value = "";
       //FILTRELEMEYI SIFIRLA
-      console.log("ERROR STATE:",errorState.value)
       if(errorState.value == true){
         errorMessage.value = null
         sortByTime()

@@ -49,7 +49,6 @@ export default {
         querySnapshot.forEach((doc) => {
           detailList.value.push(doc.data());
           isLoading.value = false
-          console.log(isLoading.value)
         });
       } catch (error) {
         console.error("infos database error:", error);
@@ -75,18 +74,16 @@ export default {
     };
 
     const handleChildPayMethod = (newMethod) => {
-      updatePayMethod.value = newMethod.value;
-      console.log("Yeni ödeme şekli:", newMethod.value.name);
+      updatePayMethod.value = newMethod?.value;
+  
     };
 
     const handleChildPrice = (newPrice) => {
       updatePrice.value = newPrice.value;
-      console.log("Yeni fiyat:", updatePrice.value);
     };
 
     const handleChildDate = (newDate) => {
       upDate.value = newDate.value;
-      console.log("Yeni Tarih:", newDate.value);
     };
 
     const deleteItem = (myID) => {
