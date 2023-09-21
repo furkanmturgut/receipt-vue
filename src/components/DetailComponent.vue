@@ -25,8 +25,9 @@
             <div id="methodData" style="display: -webkit-inline-box">
               <i class="pi pi-wallet" style="margin-right: 0.5rem"></i>
               <span class="font-semibold" style="max-width: auto; ">
-                <TfDropdownView class="inputWidth" v-model="payMethods" :options="paymentList" optionLabel="name"
-                  placeholder="Seçiniz" :disabled="!isUpdate" @change="emitPayMetod">
+                <TfDropdownView class="inputWidth" 
+                  v-model="payMethods" :options="paymentList" optionLabel="name" :placeholder="item.paymentMethod.name"
+                  :disabled="!isUpdate" @change="emitPayMetod">
                 </TfDropdownView>
               </span>
             </div>
@@ -94,8 +95,8 @@ export default {
     const year = ref('')
 
     const paymentList = [
-      { name: "Nakit", value: "Nakit" },
-      { name: "Kredi Kartı", value: "Kredi Kartı" }
+      { name: "Nakit", value: "nakit" },
+      { name: "Kredi Kartı", value: "kredi" }
     ];
 
     //Date Validation
@@ -140,7 +141,10 @@ export default {
       userId.value = item.id;
       isUpdate.value = !isUpdate.value;
       dates.value = item.receiptDate;
-      payMethods.value = item.paymentMethod[0];
+      payMethods.value = {
+        name: item.paymentMethod.value,
+        value: item.paymentMethod.value.slice(0, 5).toLowerCase(),
+      };
       itemPrices.value = item.price;
 
       emitPayMetod(payMethods.value);
@@ -154,10 +158,8 @@ export default {
 
     const emitDate = () => {
       const selectDate = dates.value;
-      console.log("Selected Date: ", selectDate);
       const enteredYear = parseInt(selectDate.substring(0, 4), 10);
 
-      console.log("SDate Typeof : ", typeof selectDate)
       if (selectDate != "" && selectDate != null && year.value >= enteredYear && enteredYear >= 2000) {
         e.value = false;
         emit("dateEmit", dates);
@@ -170,8 +172,6 @@ export default {
     const emitPrice = () => {
       const payment = itemPrices.value;
       if (payment > 0 && payment <= 9000) {
-        console.log("Gelen veri :", payment)
-        console.log("Tipi: ", typeof payment)
         e.value = false
         emit("priceEmit", itemPrices);
       } else {
@@ -182,13 +182,10 @@ export default {
     };
 
     const saveItem = (slipsId) => {
-      console.log("Save");
       id.value = slipsId;
       emit("updateClick", slipsId);
       router.push("/");
     };
-
-
 
     return {
       deleteClick,

@@ -50,7 +50,6 @@ export default {
                     }
                 })
             } else {
-                console.log("Error reset")
                 errorState.value = true;
                 errorMessage.value = "Lütfen geçerli olan bir mail adresi giriniz."
             }
